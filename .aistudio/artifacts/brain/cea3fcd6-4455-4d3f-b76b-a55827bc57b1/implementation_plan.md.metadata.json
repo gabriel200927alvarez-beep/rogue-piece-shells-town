@@ -1,0 +1,6 @@
+{
+  "summary":  "Plan arquitectónico y visual en Canvas 2D para Rogue Piece: Shells Town que cubre el rework dinámico de cortes (slashes) con estelas cónicas, sistema de hit-reaction y partículas direccionales, telegraphs progresivos con cintas de proyectiles y haz electromagnético, e inercia de locomoción junto a hazards orgánicos bajo presupuesto estricto de 60 FPS.",
+  "updatedAt":  "2026-11-23T20:45:13.619113371Z",
+  "requestFeedback":  true,
+  "userFacing":  true
+}

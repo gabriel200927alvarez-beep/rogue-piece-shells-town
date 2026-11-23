@@ -1,4 +1,9 @@
-# Hefesto: lo que no debe subir a GitHub
+# Dependencies
+node_modules/
+dist/
+build/
+
+# Hefesto
 .DS_Store
 Thumbs.db
 *.log
@@ -14,12 +19,6 @@ juego-*.x86_64
 juego-*.exe
 juego-*.pck
 web/
-
-# Node / build
-node_modules/
-dist/
-build/
-*.local
 
 # Environment
 .env
