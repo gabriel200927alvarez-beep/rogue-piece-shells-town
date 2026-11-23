@@ -1,0 +1,19 @@
+; Proyecto Godot creado por Hefesto.
+config_version=5
+
+[application]
+
+config/name="Rogue Piece "
+run/main_scene="res://main.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+config/icon="res://icon.svg"
+
+[editor]
+
+import/use_multiple_threads=false
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true

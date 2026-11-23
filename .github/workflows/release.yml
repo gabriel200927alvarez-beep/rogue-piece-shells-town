@@ -1,0 +1,50 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Create release archive
+        run: |
+          cp index.html rogue-piece-${{ steps.version.outputs.VERSION }}.html
+
+      - name: Generate changelog for this version
+        id: changelog
+        run: |
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          # Extract section for this version from CHANGELOG.md
+          awk -v ver="$VERSION" '
+            /^## \[/ { in_section = ($0 ~ "\\[" ver "\\]") }
+            in_section { print }
+            /^## \[/ && in_section && !/^## \[' ver '\]/ { exit }
+          ' CHANGELOG.md > release_notes.md || echo "Version $VERSION" > release_notes.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.VERSION }}
+          name: Release ${{ steps.version.outputs.VERSION }}
+          body_path: release_notes.md
+          files: |
+            rogue-piece-${{ steps.version.outputs.VERSION }}.html
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
