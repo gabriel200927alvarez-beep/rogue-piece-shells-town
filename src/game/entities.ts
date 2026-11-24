@@ -12,12 +12,12 @@ import {
   spawnParticle,
   spawnFloatingText
 } from './physics';
+import { getCharacterModule } from './characters/index';
+import { buildCharacterContext } from './abilities';
 
 export interface EntitiesCallbacks {
-  onGainLegendResource: (charId: 'shanks' | 'whitebeard' | 'luffy_pts', amount: number) => void;
   onUpdateBossHUD: (boss: any) => void;
   onUpdateWaveHUD: () => void;
-  onUpdateShanksChainUI: () => void;
   onUpdatePlayerHUD: () => void;
   onTriggerGameOver: () => void;
   onDamageEnemiesInCircle: (
@@ -32,10 +32,8 @@ export interface EntitiesCallbacks {
 }
 
 let entitiesCallbacks: EntitiesCallbacks = {
-  onGainLegendResource: () => {},
   onUpdateBossHUD: () => {},
   onUpdateWaveHUD: () => {},
-  onUpdateShanksChainUI: () => {},
   onUpdatePlayerHUD: () => {},
   onTriggerGameOver: () => {},
   onDamageEnemiesInCircle: () => false
@@ -234,7 +232,6 @@ export function onEnemyKilled(en: any): void {
   STATE.waveEnemiesRemaining = Math.max(0, STATE.waveEnemiesRemaining - 1);
   entitiesCallbacks.onUpdateWaveHUD();
 
-  // Recursos de Legendarios al matar enemigos (se mantienen entre oleadas)
   let resGain = 8;
   if (en.isBoss || en.type === 'alvida') resGain = 30;
   else if (en.type === 'officer') resGain = 15;
@@ -242,13 +239,7 @@ export function onEnemyKilled(en: any): void {
   else if (en.type === 'shooter') resGain = 6;
   else resGain = 8;
 
-  if (STATE.charId === 'shanks') {
-    entitiesCallbacks.onGainLegendResource('shanks', resGain);
-  } else if (STATE.charId === 'whitebeard') {
-    entitiesCallbacks.onGainLegendResource('whitebeard', resGain);
-  } else if (STATE.charId === 'luffy_pts') {
-    entitiesCallbacks.onGainLegendResource('luffy_pts', resGain);
-  }
+  getCharacterModule(STATE.charId).onEnemyKilled?.(buildCharacterContext(), en, resGain);
 
   for (let i = 0; i < 12; i++) {
     spawnParticle(en.x, en.y, en.isBoss ? '#F5C518' : '#E0E0E0', 5, 0.4);
@@ -275,23 +266,22 @@ export function damageEnemy(en: any, rawDamage: number, opts: Record<string, any
   );
   let finalDmg = rawDamage;
 
-  // Mitigación de armadura enemiga con soporte para penetración de Law/Killer
+  const charMod = getCharacterModule(STATE.charId);
+  const modRes = charMod.onModifyDamageEnemy?.(STATE.player, en, opts) ?? {};
+
+  // Mitigación de armadura enemiga con soporte para penetración de personaje
   let effectiveArmor = en.armor || 0;
   if (en.armorDebuffTimer > 0) effectiveArmor *= 0.80;
   let ignorePct = opts.ignoreArmorPct || 0;
-  if (STATE.charId === 'law' && ignorePct < 1.0) {
-    ignorePct = Math.max(ignorePct, 0.20); // Pasiva Ope Ope no Mi: ignora 20% armadura
-  } else if (STATE.charId === 'whitebeard' && ignorePct < 1.0) {
-    ignorePct = Math.max(ignorePct, 0.30); // Pasiva Gura Gura no Mi: ignora 30% armadura
+  if (modRes.ignoreArmorPct && ignorePct < 1.0) {
+    ignorePct = Math.max(ignorePct, modRes.ignoreArmorPct);
   }
   effectiveArmor *= 1 - Math.min(1, ignorePct);
   if (effectiveArmor > 0) {
     finalDmg = Math.max(1, Math.round(finalDmg * (100 / (100 + effectiveArmor))));
   }
 
-  // Killer Frenzy: penetra todos los escudos
-  const bypassShield =
-    opts.pierceShield || (STATE.charId === 'killer' && STATE.player.killerFrenzyTimer > 0);
+  const bypassShield = Boolean(opts.pierceShield || modRes.pierceShield);
 
   if (en.type === 'shield' && en.hasShield && !en.shieldBroken && !bypassShield) {
     const isExposed = en.shieldExposedTimer > 0;
@@ -338,14 +328,8 @@ export function damageEnemy(en: any, rawDamage: number, opts: Record<string, any
     }
   }
 
-  // Shambles de Law: enemigos inmovilizados por Shambles reciben 1.5x daño de Law
-  if (STATE.charId === 'law' && en.lawShamblesDebuffTimer > 0) {
-    finalDmg = Math.round(finalDmg * 1.5);
-  }
-
-  // Pasiva de Shanks: Enemigos aturdidos reciben +20% daño de Shanks
-  if (STATE.charId === 'shanks' && en.stunTimer > 0) {
-    finalDmg = Math.round(finalDmg * 1.20);
+  if (modRes.dmgMult && modRes.dmgMult !== 1.0) {
+    finalDmg = Math.round(finalDmg * modRes.dmgMult);
   }
 
   if (en.exposedBonusDmgTimer > 0) {
@@ -358,11 +342,7 @@ export function damageEnemy(en: any, rawDamage: number, opts: Record<string, any
   en.hitSquashMax = 0.12;
   en.hitAngle = hitAng;
 
-  if (STATE.charId === 'shanks') {
-    entitiesCallbacks.onGainLegendResource('shanks', 10);
-  } else if (STATE.charId === 'whitebeard') {
-    entitiesCallbacks.onGainLegendResource('whitebeard', 8);
-  }
+  charMod.onAfterDamageEnemy?.(buildCharacterContext(), en, opts);
   AUDIO.playHit();
 
   spawnFloatingText(
@@ -459,53 +439,19 @@ export function damageEnemy(en: any, rawDamage: number, opts: Record<string, any
   }
 }
 
-export function damagePlayer(incomingDmg: number, isBlunt = false, attacker: any = null): void {
+export function damagePlayer(incomingDmg: number, isBlunt = false, attacker: any = null, isProjectile = false): void {
   const p = STATE.player;
   if (p.invulnTimer > 0 || STATE.screen !== 'playing') return;
 
-  // Shanks: Future Sight (H3) - Inmunidad total y esquiva lateral
-  if (STATE.charId === 'shanks' && p.futureSightTimer > 0) {
-    const dodgeAngle = p.facingAngle + (Math.random() < 0.5 ? Math.PI / 2 : -Math.PI / 2);
-    const origX = p.x;
-    const origY = p.y;
-    p.x += Math.cos(dodgeAngle) * 15;
-    p.y += Math.sin(dodgeAngle) * 15;
-    p.x = Math.max(
-      CONFIG.ARENA_MARGIN_X + p.radius,
-      Math.min(CONFIG.WORLD_WIDTH - CONFIG.ARENA_MARGIN_X - p.radius, p.x)
-    );
-    p.y = Math.max(
-      CONFIG.ARENA_MARGIN_Y + p.radius,
-      Math.min(CONFIG.WORLD_HEIGHT - CONFIG.ARENA_MARGIN_Y - p.radius, p.y)
-    );
-    STATE.afterimages.push({ x: origX, y: origY, color: '#FF1744', life: 0.20, maxLife: 0.20 });
-    spawnFloatingText(p.x, p.y - 34, 'MISS', '#FF1744', 1.15);
-    AUDIO.playDash();
-    return;
-  }
-
-  // Shanks: si recibe daño mientras ejecuta la cadena de H2, la cadena se rompe
-  if (STATE.charId === 'shanks' && p.shanksChainStep > 0) {
-    p.shanksChainStep = 0;
-    p.shanksChainTimer = 0;
-    p.skillCds[1] = p.skillMaxCds[1]; // Inicia CD 10s inmediatamente
-    spawnFloatingText(p.x, p.y - 48, '💔 CHAIN BROKEN', '#FF5252', 1.25);
-    entitiesCallbacks.onUpdateShanksChainUI();
-  }
-
-  // Luffy PTS: Interrupción de carga King Kong Gun fuera de Gear 2nd
-  if (STATE.charId === 'luffy_pts' && p.isChargingKKG) {
-    if (p.gear2ndTimer > 0) {
-      // Durante Gear 2nd: la carga NO se interrumpe (escudo de Haki activo)
-      spawnFloatingText(p.x, p.y - 42, '🛡️ UNSTOPPABLE HAKI!', '#FF1744', 1.15);
-    } else {
-      // Fuera de Gear 2nd: la carga se interrumpe al recibir daño
-      p.isChargingKKG = false;
-      p.kkgChargeTimer = 0;
-      p.skillCds[2] = p.skillMaxCds[2]; // Entra en CD
-      spawnFloatingText(p.x, p.y - 48, '💔 KKG CANCELLED', '#FF5252', 1.25);
-    }
-  }
+  const charMod = getCharacterModule(STATE.charId);
+  const beforeRes = charMod.onBeforePlayerDamage?.(
+    buildCharacterContext(),
+    incomingDmg,
+    isBlunt,
+    attacker,
+    isProjectile
+  ) ?? {};
+  if (beforeRes.cancelled) return;
 
   if (attacker && attacker.inSmoke && Math.random() < 0.50) {
     spawnFloatingText(p.x, p.y - 34, '💨 ¡FALLO!', '#CFD8DC', 0.9);
@@ -513,21 +459,7 @@ export function damagePlayer(incomingDmg: number, isBlunt = false, attacker: any
   }
 
   STATE.timeSinceLastCombat = 0;
-  let dmg = incomingDmg;
-
-  if (STATE.charId === 'luffy' && isBlunt) {
-    dmg *= 0.80;
-  }
-
-  // Barbablanca en H3 (Gura Gura Zone): mitiga el 50% del daño recibido
-  if (STATE.charId === 'whitebeard' && p.quakeZoneTimer > 0) {
-    dmg *= 0.50;
-  }
-
-  // Luffy PTS en Gear 2nd (H2): escudo que reduce el 25% del daño recibido
-  if (STATE.charId === 'luffy_pts' && p.gear2ndTimer > 0) {
-    dmg *= 0.75;
-  }
+  let dmg = incomingDmg * (beforeRes.dmgMult ?? 1.0);
 
   dmg = Math.max(1, Math.round(dmg * (100 / (100 + p.armor))));
 
@@ -871,21 +803,19 @@ export function detonateUsoppBomb(x: number, y: number, dmgMult: number): void {
 
 export function updateProjectiles(dt: number): void {
   const p = STATE.player;
+  const charMod = getCharacterModule(STATE.charId);
+  const ctx = buildCharacterContext();
   for (let i = STATE.projectiles.length - 1; i >= 0; i--) {
     const pr = STATE.projectiles[i];
     pr.life -= dt;
 
-    // ROOM de Trafalgar Law: Ralentiza progresivamente y detiene proyectiles enemigos dentro de la esfera
     let projSpeedMult = 1.0;
-    if (!pr.fromPlayer && STATE.charId === 'law' && p.roomTimer > 0) {
-      if (Math.hypot(pr.x - p.x, pr.y - p.y) <= p.roomRadius + pr.radius) {
-        pr.roomStallTimer = (pr.roomStallTimer || 0) + dt;
-        projSpeedMult = Math.max(0.03, 1 - pr.roomStallTimer * 1.6);
-        if (pr.roomStallTimer >= 1.0) {
-          spawnParticle(pr.x, pr.y, '#80DEEA', 3.5, 0.25);
-          STATE.projectiles.splice(i, 1);
-          continue;
-        }
+    if (charMod.onProjectileTick) {
+      const tickRes = charMod.onProjectileTick(ctx, pr, dt);
+      if (tickRes?.speedMult !== undefined) projSpeedMult = tickRes.speedMult;
+      if (tickRes?.remove) {
+        STATE.projectiles.splice(i, 1);
+        continue;
       }
     }
 
@@ -1028,41 +958,11 @@ export function updateProjectiles(dt: number): void {
       }
     } else {
       if (Math.hypot(p.x - pr.x, p.y - pr.y) <= p.radius + pr.radius) {
-        // Shanks: Pasiva de cortar balas con ataque básico (Parry, ventana ~0.2s)
-        if (STATE.charId === 'shanks') {
-          const isParrying =
-            p.attackAnimTimer > 0 ||
-            performance.now() - (p.lastAttackAttemptTime || 0) <= 200;
-          if (isParrying) {
-            for (let k = 0; k < 8; k++) spawnParticle(pr.x, pr.y, '#FF1744', 4.5, 0.25);
-            STATE.slashEffects.push({
-              x: pr.x,
-              y: pr.y,
-              angle: 0,
-              range: 35,
-              isCircular: true,
-              color: '#FF1744',
-              life: 0.15,
-              maxLife: 0.15,
-              type: 'ring'
-            });
-            spawnFloatingText(pr.x, pr.y - 28, 'CUT!', '#FF1744', 1.25);
-            AUDIO.playMetalClank();
-            AUDIO.playShing();
-            STATE.projectiles.splice(i, 1);
-            continue;
-          }
-        }
-
-        if (STATE.charId === 'shanks' && p.futureSightTimer > 0) {
-          // Future Sight: los proyectiles enemigos se desintegran al contacto
-          for (let k = 0; k < 6; k++) spawnParticle(pr.x, pr.y, '#FF1744', 3.5, 0.25);
-          spawnFloatingText(p.x, p.y - 32, 'MISS', '#FF1744', 1.0);
-          AUDIO.playEtherealSwish();
+        if (charMod.onCheckEnemyProjectileHit?.(ctx, pr)) {
           STATE.projectiles.splice(i, 1);
           continue;
         }
-        damagePlayer(pr.damage, pr.type === 'mace_boomerang', pr.owner);
+        damagePlayer(pr.damage, pr.type === 'mace_boomerang', pr.owner, true);
         if (pr.type !== 'mace_boomerang') {
           STATE.projectiles.splice(i, 1);
           continue;

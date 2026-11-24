@@ -112,6 +112,7 @@ export interface GameState {
     dashHitEnemyIds: any[];
     skillCds: number[];
     skillMaxCds: number[];
+    custom: Record<string, any>;
     visualScaleX: number;
     visualScaleY: number;
     landSquashTimer: number;
@@ -197,37 +198,7 @@ export const STATE: GameState = {
     dashDirX: 1, dashDirY: 0, customDashDist: 165,
     dashHitEnemyIds: [],
     skillCds: [0, 0, 0], skillMaxCds: [4.5, 6.0, 9.5],
-    // Estados específicos de personajes previos
-    gatlingHitsLeft: 0, gatlingTickTimer: 0,
-    diableHitsLeft: 0, diableTickTimer: 0,
-    stormTimer: 0, stormHitsLeft: 0, stormTickTimer: 0, stormAimAngle: 0,
-    sanzenStep: 0, sanzenTimer: 0, sanzenAngle: 0,
-    ifritShotsLeft: 0, ifritTickTimer: 0, ifritCycleIndex: 0,
-    usoppDoubleShotTimer: 0, usoppDoubleShotAngle: 0,
-    cola: 0, maxCola: 50,
-    strongRightTimer: 0, strongRightAngle: 0,
-    radicalChargeTimer: 0, radicalChargeAngle: 0, radicalColaMult: 1.0,
-    robinHitCounter: 0, robinRootReady: false,
-    // Estados específicos de Law
-    roomTimer: 0, roomDurationMax: 6.0, roomRadius: 180,
-    roomFadeTimer: 0, roomFadeMax: 0.45, roomFadeX: 0, roomFadeY: 0,
-    // Estados específicos de Kid
-    scrap: 0, maxScrap: 20,
-    kidRepelWindowTimer: 0,
-    punkRottenTimer: 0, punkRottenDurationMax: 8.0, punkRottenBuildTimer: 0,
-    punkRottenPrevMaxCharges: 1, punkRottenPrevDashCdMax: 2.5,
-    damnedPunkTimer: 0, damnedPunkTickTimer: 0, damnedPunkTicksLeft: 0, damnedPunkTarget: null, damnedPunkAngle: 0,
-    // Estados específicos de Killer
-    ensanamientoTimer: 0,
-    killerFrenzyTimer: 0,
-    killerHeartbeatTimer: 0,
-    // Cargas iniciales de Barbablanca y cadena de Shanks
-    wbJumpCharges: 2,
-    wbJumpCdTimer: 0,
-    wbQuakeVisualScale: 0,
-    wbCameraZoom: 1.0,
-    shanksChainStep: 0,
-    shanksChainTimer: 0,
+    custom: {},
     // Locomoción e inercia visual (Canvas 2D)
     visualScaleX: 1.0,
     visualScaleY: 1.0,

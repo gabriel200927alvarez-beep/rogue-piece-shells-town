@@ -5,6 +5,7 @@
 import { CONFIG } from './config';
 import { STATE } from './state';
 import { INPUT_TOUCH } from './input';
+import { getCharacterModule } from './characters/index';
 
 export interface SpawnParticleOpts {
   vx?: number;
@@ -80,7 +81,7 @@ export function findNearestEnemyInCone(maxDist: number, baseAngle: number, halfA
 
 export function getAimAngle(): number {
   const p = STATE.player;
-  const aimMaxRange = STATE.charId === 'usopp' ? 340 : CONFIG.AUTO_AIM_RANGE;
+  const aimMaxRange = getCharacterModule(STATE.charId).autoAimRange ?? CONFIG.AUTO_AIM_RANGE;
   const target = findNearestEnemy(aimMaxRange);
   STATE.targetedEnemy = target;
   if (target) {
@@ -101,29 +102,13 @@ export function calculatePlayerDamage(
   const bonusPct = (isSkill ? STATE.mods.skillDmgPct : STATE.mods.normalDmgPct) + STATE.permBonusDmg;
   let dmg = p.baseDamage * baseMult * (1 + bonusPct);
 
-  // Pasiva ROOM de Law: +20% daño SÓLO mientras ROOM está activo
-  if (STATE.charId === 'law' && p.roomTimer > 0) {
-    dmg *= 1.20;
-  }
+  const charMod = getCharacterModule(STATE.charId);
+  const modRes = charMod.onCalculateDamage?.(p, isSkill) ?? {};
+  dmg *= modRes.dmgMult ?? 1.0;
 
-  // Transformación Punk Rotten de Kid: +30% daño en ataques normales
-  if (STATE.charId === 'kid' && p.punkRottenTimer > 0 && !isSkill) {
-    dmg *= 1.30;
-  }
-
-  // Transformación Killer Frenzy: +100% daño en TODOS los ataques
-  if (STATE.charId === 'killer' && p.killerFrenzyTimer > 0) {
-    dmg *= 2.0;
-  }
-
-  // Buff Luffy PTS Gear 2nd: x1.4 a TODO el daño
-  if (STATE.charId === 'luffy_pts' && p.gear2ndTimer > 0) {
-    dmg *= 1.4;
-  }
-
-  const effectiveCritChance = STATE.mods.critChance + (STATE.charId === 'luffy_pts' ? 0.15 : 0);
-  const isCrit = forceCrit || (Math.random() < effectiveCritChance);
-  if (isCrit) dmg *= (STATE.charId === 'luffy_pts' ? 2.0 : 1.5);
+  const effectiveCritChance = STATE.mods.critChance + (modRes.extraCritChance ?? 0);
+  const isCrit = forceCrit || Math.random() < effectiveCritChance;
+  if (isCrit) dmg *= modRes.critMult ?? 1.5;
   return { amount: Math.round(dmg), isCrit };
 }
 

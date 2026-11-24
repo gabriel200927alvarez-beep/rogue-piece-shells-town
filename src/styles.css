@@ -231,6 +231,19 @@ canvas#gameCanvas {
   background: #9E9E9E;
   letter-spacing: 0.5px;
 }
+.hud-rarity-pill.legendario {
+  background: linear-gradient(180deg, #9E6300 0%, #5A3200 100%);
+  border-color: #FFD54F;
+  color: #FFD700;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.65);
+}
+.hud-rarity-pill.yonko {
+  background: linear-gradient(180deg, #EF5350 0%, #8E0000 100%);
+  border-color: #FFD54F;
+  color: #FFD700;
+  box-shadow: 0 0 10px rgba(255, 213, 79, 0.75);
+  animation: yonkoPulse 1.5s infinite alternate ease-in-out;
+}
 .hp-text {
   font-size: clamp(12px, 1.5vw, 15px);
   font-weight: 800;
@@ -729,6 +742,12 @@ canvas#gameCanvas {
   border: 2px solid rgba(255, 213, 79, 0.65);
   box-shadow: 0 5px 0 #4A0000, 0 8px 14px rgba(0,0,0,0.45), inset 0 2px 1px rgba(255,255,255,0.45), inset 0 -3px 2px rgba(0,0,0,0.25);
 }
+.theme-luffy_g5 .btn-skill {
+  background: linear-gradient(165deg, #FFFFFF 0%, #CFD8DC 55%, #FFE082 100%);
+  border: 2px solid #FFD54F;
+  color: #212121;
+  box-shadow: 0 5px 0 #8C5A00, 0 0 14px rgba(255, 215, 0, 0.45), inset 0 2px 2px rgba(255,255,255,0.85), inset 0 -3px 2px rgba(0,0,0,0.2);
+}
 
 /* Badge interactivo Gear 4 Bloqueado */
 .gear4-lock-badge {
@@ -993,6 +1012,14 @@ canvas#gameCanvas {
     0 14px 26px rgba(211, 47, 47, 0.5),
     inset 0 2px 2px rgba(255, 205, 210, 0.4);
 }
+.char-card.rarity-yonko.expanded {
+  border-color: #FFD54F;
+  box-shadow:
+    0 8px 0 #7A1400,
+    0 14px 30px rgba(255, 213, 79, 0.65),
+    0 0 18px rgba(211, 47, 47, 0.6),
+    inset 0 2px 2px rgba(255, 245, 157, 0.55);
+}
 
 .char-card.selected-flash::after {
   content: "";
@@ -1031,21 +1058,26 @@ canvas#gameCanvas {
   box-shadow: 0 0 8px rgba(156, 39, 176, 0.8);
 }
 .rarity-badge.legendario {
-  background: linear-gradient(180deg, #FFD54F 0%, #FF8F00 100%);
-  border: 1.5px solid #FFE082;
-  color: #3E2723;
-  box-shadow: 0 0 10px rgba(255, 179, 0, 0.85);
+  background: linear-gradient(180deg, #9E6300 0%, #5A3200 100%);
+  border: 1.5px solid #FFD54F;
+  color: #FFD700;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.85), inset 0 1px 2px rgba(255, 245, 157, 0.45);
   animation: legendPulse 1.8s infinite alternate ease-in-out;
 }
 .rarity-badge.yonko {
-  background: linear-gradient(180deg, #EF5350 0%, #B71C1C 100%);
+  background: linear-gradient(180deg, #EF5350 0%, #8E0000 100%);
   border: 1.5px solid #FFD54F;
-  color: #FFFFFF;
-  box-shadow: 0 0 10px rgba(211, 47, 47, 0.9);
+  color: #FFD700;
+  box-shadow: 0 0 12px rgba(255, 213, 79, 0.85), 0 0 14px rgba(211, 47, 47, 0.9);
+  animation: yonkoPulse 1.5s infinite alternate ease-in-out;
 }
 @keyframes legendPulse {
   0% { box-shadow: 0 0 6px rgba(255, 179, 0, 0.6); }
   100% { box-shadow: 0 0 16px rgba(255, 213, 79, 1); }
+}
+@keyframes yonkoPulse {
+  0% { box-shadow: 0 0 8px rgba(211, 47, 47, 0.85), 0 0 4px rgba(255, 213, 79, 0.6); border-color: #FFB300; }
+  100% { box-shadow: 0 0 18px rgba(255, 213, 79, 1), 0 0 12px rgba(239, 83, 80, 0.95); border-color: #FFF59D; }
 }
 
 .char-card-body {

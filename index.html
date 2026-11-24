@@ -6,12 +6,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <title>Rogue Piece: Shells Town</title>
-  <meta name="description" content="One Piece roguelike action arena with 12 playable pirates, 5 waves, Boss Alvida, and touch + keyboard controls." />
+  <meta name="description" content="One Piece roguelike action arena with 13 playable pirates, 5 waves, Boss Alvida, and touch + keyboard controls." />
   <meta property="og:title" content="Rogue Piece: Shells Town" />
-  <meta property="og:description" content="One Piece roguelike action arena with 12 playable pirates, 5 waves, Boss Alvida, and touch + keyboard controls." />
+  <meta property="og:description" content="One Piece roguelike action arena with 13 playable pirates, 5 waves, Boss Alvida, and touch + keyboard controls." />
   <meta property="og:type" content="website" />
-  <script type="module" crossorigin src="./assets/index-BVBu-GzK.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-DtCnWBgX.css">
+  <script type="module" crossorigin src="./assets/index-aCU2q6mr.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-DC_qy8MR.css">
 </head>
 <body data-state="menu">
 
@@ -57,79 +57,7 @@
                   <div></div><div></div><div></div><div></div><div></div>
                 </div>
               </div>
-              <!-- Indicador de COLA exclusivo para Franky -->
-              <div id="franky-cola-hud" class="char-resource-hud">
-                <span style="font-size:11px;">🥤</span>
-                <div class="res-bar-outer">
-                  <div id="hud-cola-fill" class="res-bar-fill"></div>
-                </div>
-                <span id="hud-cola-text" class="res-text text-outline-sm">0/50</span>
-              </div>
-              <!-- Indicador de ROOM exclusivo para Law (E2) -->
-              <div id="law-room-hud" class="char-resource-hud">
-                <span style="font-size:11px;">🌐</span>
-                <div class="res-bar-outer">
-                  <div id="hud-room-fill" class="res-bar-fill"></div>
-                </div>
-                <span id="hud-room-text" class="res-text text-outline-sm">LISTO</span>
-              </div>
-              <!-- Indicador de PUNK ROTTEN + CHATARRA exclusivo para Kid (E3) -->
-              <div id="kid-scrap-hud" class="char-resource-hud">
-                <span id="kid-hud-icon" style="font-size:11px;">🧲</span>
-                <div class="res-bar-outer">
-                  <div id="hud-scrap-fill" class="res-bar-fill"></div>
-                </div>
-                <span id="hud-scrap-text" class="res-text text-outline-sm">0/20</span>
-              </div>
-              <!-- Indicador de 2 DASHES exclusivo para Killer (E1) -->
-              <div id="killer-dash-hud" class="char-resource-hud">
-                <span style="font-size:10px; font-weight:900; color:#FFCDD2;" class="text-outline-sm">DASH:</span>
-                <div id="killer-dash-pip-0" class="killer-dash-pip ready">
-                  <span>💨</span>
-                  <div id="killer-dash-fill-0" class="killer-dash-pip-fill"></div>
-                </div>
-                <div id="killer-dash-pip-1" class="killer-dash-pip ready">
-                  <span>💨</span>
-                  <div id="killer-dash-fill-1" class="killer-dash-pip-fill"></div>
-                </div>
-                <span id="hud-killer-state-text" class="res-text text-outline-sm" style="color:#FF8A80;"></span>
-              </div>
-              <!-- Indicador de HAKI exclusivo para Shanks -->
-              <div id="shanks-haki-hud" class="char-resource-hud">
-                <span style="font-size:11px;">👑</span>
-                <div class="res-bar-outer" style="border-color:#FF1744; background:#2A0000;">
-                  <div id="hud-shanks-fill" class="res-bar-fill" style="background: linear-gradient(90deg, #B71C1C, #FF1744);"></div>
-                </div>
-                <span id="hud-shanks-text" class="res-text text-outline-sm" style="color:#FF5252;">HAKI 0/100</span>
-              </div>
-              <!-- Indicador de GURA GURA exclusivo para Barbablanca -->
-              <div id="whitebeard-quake-hud" class="char-resource-hud">
-                <span style="font-size:11px;">⚡</span>
-                <div class="res-bar-outer" style="border-color:#ECEFF1; background:#263238;">
-                  <div id="hud-quake-fill" class="res-bar-fill" style="background: linear-gradient(90deg, #90A4AE, #FFFFFF);"></div>
-                </div>
-                <span id="hud-quake-text" class="res-text text-outline-sm" style="color:#FFFFFF;">GURA 0/100</span>
-                <div id="wb-jump-pips" style="display:flex; gap:3px; margin-left:4px;">
-                  <div id="wb-jump-pip-0" class="wb-jump-pip ready">🔱</div>
-                  <div id="wb-jump-pip-1" class="wb-jump-pip ready">🔱</div>
-                </div>
-              </div>
-              <!-- Botón CANCEL exclusivo para Barbablanca Island Shaking H3 -->
-              <button id="btn-cancel-quake" class="btn-cancel-quake interactive" onclick="cancelWhitebeardQuakeZone()">CANCEL</button>
-              <!-- Indicador de GEAR 2 exclusivo para Luffy PTS -->
-              <div id="luffypts-g2-hud" class="char-resource-hud">
-                <span style="font-size:11px;">💨</span>
-                <div class="res-bar-outer" style="border-color:#FF1744; background:#2A0000;">
-                  <div id="hud-g2-fill" class="res-bar-fill" style="background: linear-gradient(90deg, #D50000, #FF5252);"></div>
-                </div>
-                <span id="hud-g2-text" class="res-text text-outline-sm" style="color:#FF5252;">G2 0/100</span>
-              </div>
-              <!-- Icono de GEAR 4 BLOQUEADO exclusivo para Luffy PTS -->
-              <div id="luffypts-gear4-hud" class="char-resource-hud interactive" style="cursor:pointer;" onclick="onGear4Click()">
-                <div class="gear4-lock-badge text-outline-sm">
-                  <span>🔒 GEAR 4</span>
-                </div>
-              </div>
+              <div id="char-hud-slot"></div>
             </div>
           </div>
 
@@ -163,6 +91,9 @@
             <button id="btn-settings" class="btn-3d btn-hud-top interactive text-outline-sm">⚙️</button>
             <button id="btn-pause" class="btn-3d btn-hud-top interactive text-outline-sm">⏸</button>
           </div>
+
+          <!-- Contenedor extra de HUD por personaje -->
+          <div id="char-hud-extra" style="position:absolute;inset:0;pointer-events:none;"></div>
 
           <!-- Tooltip del Tutorial Rápido -->
           <div id="tutorial-tooltip" class="text-outline-sm"></div>
@@ -236,406 +167,20 @@
             JUGAR
           </button>
           <div style="margin-top: 20px; font-size: 12px; color: #D0D0D8; text-align: center;" class="text-outline-sm">
-            📱 Táctil y ⌨️ Teclado (WASD · Espacio/J Atacar · Shift/K Dash · 1/2/3 Habs · Esc Pausa) • 12 Piratas
+            📱 Táctil y ⌨️ Teclado (WASD · Espacio/J Atacar · Shift/K Dash · 1/2/3 Habs · Esc Pausa) • 13 Piratas
           </div>
         </div>
 
-        <!-- 2. SELECCIÓN DE PERSONAJE (9 PERSONAJES CON SCROLL HORIZONTAL SIN CORTES) -->
+        <!-- 2. SELECCIÓN DE PERSONAJE (PERSONAJES CON SCROLL HORIZONTAL SIN CORTES) -->
         <div id="screen-select" class="screen-modal">
           <div class="select-header">
             <h2 class="text-outline" style="font-size: clamp(19px, 2.6vw, 28px); color: #F5C518; letter-spacing: 1px; line-height: 1.1;">ELIGE TU PIRATA</h2>
-            <div style="font-size: 10.5px; color: #F4E4C1;" class="text-outline-sm">Desliza para ver los 12 piratas • Toca ¡ZARPAR! o la tarjeta para jugar</div>
+            <div style="font-size: 10.5px; color: #F4E4C1;" class="text-outline-sm">Desliza para ver los 13 piratas • Toca ¡ZARPAR! o la tarjeta para jugar</div>
           </div>
 
-          <div id="char-carousel" class="carousel-wrapper">
-            <!-- 1. LUFFY (Común 1.0x) -->
-            <div class="char-card rarity-comun expanded" data-char="luffy" data-index="0">
-              <span class="rarity-badge comun text-outline-sm">COMÚN</span>
-              <div class="char-card-body">
-                <div class="char-card-top">
-                  <canvas id="preview-luffy" class="char-preview-canvas" width="52" height="52"></canvas>
-                  <div>
-                    <div style="font-weight: 900; font-size: 15px; color: #F5C518;" class="text-outline-sm">LUFFY</div>
-                    <div style="font-size: 10px; color: #F4E4C1; font-weight: 700;">Tanque / Luchador</div>
-                    <div style="font-size: 9px; color: #FFD54F;">Pasiva: -20% daño contundente</div>
-                  </div>
-                </div>
-                <div class="stat-bars">
-                  <div class="stat-row"><span class="stat-label">❤️ HP</span><div class="stat-track"><div class="stat-fill" data-stat-w="80%" style="background:#4CAF50;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">⚔️ DMG</span><div class="stat-track"><div class="stat-fill" data-stat-w="65%" style="background:#F44336;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">👟 VEL</span><div class="stat-track"><div class="stat-fill" data-stat-w="66%" style="background:#29B6F6;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">🛡️ ARM</span><div class="stat-track"><div class="stat-fill" data-stat-w="74%" style="background:#90A4AE;"></div></div></div>
-                </div>
-                <div class="skill-pills">
-                  <div class="skill-pill">👊 Gatling</div>
-                  <div class="skill-pill">💥 Bazooka</div>
-                  <div class="skill-pill">🌪️ Storm</div>
-                </div>
-                <div class="char-details-box">
-                  <b>Combo:</b> Pistol (110px), Pistol, Ono (onda 100px).<br>
-                  <b>H1:</b> Ráfaga 180px • <b>H2:</b> 3× empuje • <b>H3:</b> Storm 360° despeja área.
-                </div>
-              </div>
-              <div class="btn-3d btn-gold btn-zarpar text-outline-sm">¡ZARPAR CON LUFFY!</div>
-            </div>
+          <div id="char-carousel" class="carousel-wrapper"></div>
 
-            <!-- 2. ZORO (Común 1.0x) -->
-            <div class="char-card rarity-comun" data-char="zoro" data-index="1">
-              <span class="rarity-badge comun text-outline-sm">COMÚN</span>
-              <div class="char-card-body">
-                <div class="char-card-top">
-                  <canvas id="preview-zoro" class="char-preview-canvas" width="52" height="52"></canvas>
-                  <div>
-                    <div style="font-weight: 900; font-size: 15px; color: #66BB6A;" class="text-outline-sm">ZORO</div>
-                    <div style="font-size: 10px; color: #F4E4C1; font-weight: 700;">DPS Área / Ejecutor</div>
-                    <div style="font-size: 9px; color: #A5D6A7;">Pasiva: 10% prob. sangrado</div>
-                  </div>
-                </div>
-                <div class="stat-bars">
-                  <div class="stat-row"><span class="stat-label">❤️ HP</span><div class="stat-track"><div class="stat-fill" data-stat-w="69%" style="background:#4CAF50;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">⚔️ DMG</span><div class="stat-track"><div class="stat-fill" data-stat-w="82%" style="background:#F44336;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">👟 VEL</span><div class="stat-track"><div class="stat-fill" data-stat-w="71%" style="background:#29B6F6;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">🛡️ ARM</span><div class="stat-track"><div class="stat-fill" data-stat-w="37%" style="background:#90A4AE;"></div></div></div>
-                </div>
-                <div class="skill-pills">
-                  <div class="skill-pill">❌ Oni Giri</div>
-                  <div class="skill-pill">🌪️ Pound Ho</div>
-                  <div class="skill-pill">⚔️ Sanzen</div>
-                </div>
-                <div class="char-details-box">
-                  <b>Combo:</b> Tajo (90px), Tajo X, Corte Aéreo (160px + grieta).<br>
-                  <b>H1:</b> 3 cortes • <b>H2:</b> Hélice X • <b>H3:</b> Sanzen Sekai cono 2×/3×/5×.
-                </div>
-              </div>
-              <div class="btn-3d btn-gold btn-zarpar text-outline-sm">¡ZARPAR CON ZORO!</div>
-            </div>
-
-            <!-- 3. SANJI (Común 1.0x) -->
-            <div class="char-card rarity-comun" data-char="sanji" data-index="2">
-              <span class="rarity-badge comun text-outline-sm">COMÚN</span>
-              <div class="char-card-body">
-                <div class="char-card-top">
-                  <canvas id="preview-sanji" class="char-preview-canvas" width="52" height="52"></canvas>
-                  <div>
-                    <div style="font-weight: 900; font-size: 15px; color: #FFA726;" class="text-outline-sm">SANJI</div>
-                    <div style="font-size: 10px; color: #F4E4C1; font-weight: 700;">DPS Móvil / Evasivo</div>
-                    <div style="font-size: 9px; color: #FFCC80;">Pasiva: +15% vel. tras dash</div>
-                  </div>
-                </div>
-                <div class="stat-bars">
-                  <div class="stat-row"><span class="stat-label">❤️ HP</span><div class="stat-track"><div class="stat-fill" data-stat-w="61%" style="background:#4CAF50;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">⚔️ DMG</span><div class="stat-track"><div class="stat-fill" data-stat-w="76%" style="background:#F44336;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">👟 VEL</span><div class="stat-track"><div class="stat-fill" data-stat-w="91%" style="background:#29B6F6;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">🛡️ ARM</span><div class="stat-track"><div class="stat-fill" data-stat-w="23%" style="background:#90A4AE;"></div></div></div>
-                </div>
-                <div class="skill-pills">
-                  <div class="skill-pill">🔥 Diable</div>
-                  <div class="skill-pill">☄️ Concasse</div>
-                  <div class="skill-pill">🔥 Barrage</div>
-                </div>
-                <div class="char-details-box">
-                  <b>Combo:</b> Recta (95px), Arco (110px), Descendente (onda 110px).<br>
-                  <b>H1:</b> 8 patadas + fuego • <b>H2:</b> Aturde • <b>H3:</b> Diable Jambe: Barrage (quema).
-                </div>
-              </div>
-              <div class="btn-3d btn-gold btn-zarpar text-outline-sm">¡ZARPAR CON SANJI!</div>
-            </div>
-
-            <!-- 4. USOPP (Raro 1.1x) -->
-            <div class="char-card rarity-raro" data-char="usopp" data-index="3">
-              <span class="rarity-badge raro text-outline-sm">RARO</span>
-              <div class="char-card-body">
-                <div class="char-card-top">
-                  <canvas id="preview-usopp" class="char-preview-canvas" width="52" height="52"></canvas>
-                  <div>
-                    <div style="font-weight: 900; font-size: 15px; color: #8BC34A;" class="text-outline-sm">USOPP</div>
-                    <div style="font-size: 10px; color: #F4E4C1; font-weight: 700;">Francotirador (280px)</div>
-                    <div style="font-size: 9px; color: #81D4FA;">Pasiva: Proyectiles perforan +1</div>
-                  </div>
-                </div>
-                <div class="stat-bars">
-                  <div class="stat-row"><span class="stat-label">❤️ HP</span><div class="stat-track"><div class="stat-fill" data-stat-w="52%" style="background:#4CAF50;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">⚔️ DMG</span><div class="stat-track"><div class="stat-fill" data-stat-w="100%" style="background:#F44336;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">👟 VEL</span><div class="stat-track"><div class="stat-fill" data-stat-w="77%" style="background:#29B6F6;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">🛡️ ARM</span><div class="stat-track"><div class="stat-fill" data-stat-w="36%" style="background:#90A4AE;"></div></div></div>
-                </div>
-                <div class="skill-pills">
-                  <div class="skill-pill">🔥 Firebird</div>
-                  <div class="skill-pill">💨 Smoke</div>
-                  <div class="skill-pill">💣 Ledger</div>
-                </div>
-                <div class="char-details-box">
-                  <b>Combo:</b> Tirachinas (280px, CD 2.0s), Doble tiro, Bomba (área 40px 1.5×).<br>
-                  <b>H1:</b> Pájaro fuego • <b>H2:</b> Nube humo • <b>H3:</b> 3 trampas explosivas.
-                </div>
-              </div>
-              <div class="btn-3d btn-gold btn-zarpar text-outline-sm">¡ZARPAR CON USOPP!</div>
-            </div>
-
-            <!-- 5. FRANKY (Raro 1.1x) -->
-            <div class="char-card rarity-raro" data-char="franky" data-index="4">
-              <span class="rarity-badge raro text-outline-sm">RARO</span>
-              <div class="char-card-body">
-                <div class="char-card-top">
-                  <canvas id="preview-franky" class="char-preview-canvas" width="52" height="52"></canvas>
-                  <div>
-                    <div style="font-weight: 900; font-size: 15px; color: #00E5FF;" class="text-outline-sm">FRANKY</div>
-                    <div style="font-size: 10px; color: #F4E4C1; font-weight: 700;">Tanque Ofensivo Cyborg</div>
-                    <div style="font-size: 9px; color: #84FFFF;">Pasiva: Cola +5/golpe (50=+30% hab)</div>
-                  </div>
-                </div>
-                <div class="stat-bars">
-                  <div class="stat-row"><span class="stat-label">❤️ HP</span><div class="stat-track"><div class="stat-fill" data-stat-w="94%" style="background:#4CAF50;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">⚔️ DMG</span><div class="stat-track"><div class="stat-fill" data-stat-w="86%" style="background:#F44336;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">👟 VEL</span><div class="stat-track"><div class="stat-fill" data-stat-w="59%" style="background:#29B6F6;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">🛡️ ARM</span><div class="stat-track"><div class="stat-fill" data-stat-w="100%" style="background:#90A4AE;"></div></div></div>
-                </div>
-                <div class="skill-pills">
-                  <div class="skill-pill">⚡ Radical</div>
-                  <div class="skill-pill">🔨 Hammer</div>
-                  <div class="skill-pill">🌪️ CoupVent</div>
-                </div>
-                <div class="char-details-box">
-                  <b>Combo:</b> 2 golpes + Strong Right (cadena 120px 2×). Dash: 100px.<br>
-                  <b>H1:</b> Láser largo • <b>H2:</b> Martillo aturde • <b>H3:</b> Cono viento empuja.
-                </div>
-              </div>
-              <div class="btn-3d btn-gold btn-zarpar text-outline-sm">¡ZARPAR CON FRANKY!</div>
-            </div>
-
-            <!-- 6. NICO ROBIN (Raro 1.1x) -->
-            <div class="char-card rarity-raro" data-char="robin" data-index="5">
-              <span class="rarity-badge raro text-outline-sm">RARO</span>
-              <div class="char-card-body">
-                <div class="char-card-top">
-                  <canvas id="preview-robin" class="char-preview-canvas" width="52" height="52"></canvas>
-                  <div>
-                    <div style="font-weight: 900; font-size: 15px; color: #CE93D8;" class="text-outline-sm">NICO ROBIN</div>
-                    <div style="font-size: 10px; color: #F4E4C1; font-weight: 700;">Control de Masas</div>
-                    <div style="font-size: 9px; color: #E1BEE7;">Pasiva: Cada 5 golpes → Root 0.5s</div>
-                  </div>
-                </div>
-                <div class="stat-bars">
-                  <div class="stat-row"><span class="stat-label">❤️ HP</span><div class="stat-track"><div class="stat-fill" data-stat-w="59%" style="background:#4CAF50;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">⚔️ DMG</span><div class="stat-track"><div class="stat-fill" data-stat-w="80%" style="background:#F44336;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">👟 VEL</span><div class="stat-track"><div class="stat-fill" data-stat-w="77%" style="background:#29B6F6;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">🛡️ ARM</span><div class="stat-track"><div class="stat-fill" data-stat-w="50%" style="background:#90A4AE;"></div></div></div>
-                </div>
-                <div class="skill-pills">
-                  <div class="skill-pill">👐 Clutch</div>
-                  <div class="skill-pill">🌸 MilFleur</div>
-                  <div class="skill-pill">巨 Mano</div>
-                </div>
-                <div class="char-details-box">
-                  <b>Combo:</b> 1 brazo, 2 en cruz, 4 brazos (110px 1.5× + 30% root).<br>
-                  <b>H1:</b> Root 3s • <b>H2:</b> 20 brazos área • <b>H3:</b> Mano gigante 3.5×.
-                </div>
-              </div>
-              <div class="btn-3d btn-gold btn-zarpar text-outline-sm">¡ZARPAR CON ROBIN!</div>
-            </div>
-
-            <!-- 7. TRAFALGAR LAW (Épico 1.25x) -->
-            <div class="char-card rarity-epico" data-char="law" data-index="6">
-              <span class="rarity-badge epico text-outline-sm">ÉPICO</span>
-              <div class="char-card-body">
-                <div class="char-card-top">
-                  <canvas id="preview-law" class="char-preview-canvas" width="52" height="52"></canvas>
-                  <div>
-                    <div style="font-weight: 900; font-size: 15px; color: #4DD0E1;" class="text-outline-sm">TRAFALGAR LAW</div>
-                    <div style="font-size: 10px; color: #F4E4C1; font-weight: 700;">Control ROOM / Burst</div>
-                    <div style="font-size: 9px; color: #E1BEE7;">Pasiva: Ignora 20% armadura</div>
-                  </div>
-                </div>
-                <div class="stat-bars">
-                  <div class="stat-row"><span class="stat-label">❤️ HP</span><div class="stat-track"><div class="stat-fill" data-stat-w="67%" style="background:#4CAF50;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">⚔️ DMG</span><div class="stat-track"><div class="stat-fill" data-stat-w="64%" style="background:#F44336;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">👟 VEL</span><div class="stat-track"><div class="stat-fill" data-stat-w="86%" style="background:#29B6F6;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">🛡️ ARM</span><div class="stat-track"><div class="stat-fill" data-stat-w="31%" style="background:#90A4AE;"></div></div></div>
-                </div>
-                <div class="skill-pills">
-                  <div class="skill-pill">🌐 ROOM</div>
-                  <div class="skill-pill">🌀 Shambles</div>
-                  <div class="skill-pill">⚡ Gamma</div>
-                </div>
-                <div class="char-details-box">
-                  <b>Combo:</b> Nodachi 85/85/95px (130/130/145px y +20% daño dentro de ROOM).<br>
-                  <b>H1:</b> ROOM frena balas • <b>H2:</b> Shambles (solo en ROOM) • <b>H3:</b> Gamma 3.5×.
-                </div>
-              </div>
-              <div class="btn-3d btn-gold btn-zarpar text-outline-sm">¡ZARPAR CON LAW!</div>
-            </div>
-
-            <!-- 8. EUSTASS KID (Épico 1.25x) -->
-            <div class="char-card rarity-epico" data-char="kid" data-index="7">
-              <span class="rarity-badge epico text-outline-sm">ÉPICO</span>
-              <div class="char-card-body">
-                <div class="char-card-top">
-                  <canvas id="preview-kid" class="char-preview-canvas" width="52" height="52"></canvas>
-                  <div>
-                    <div style="font-weight: 900; font-size: 15px; color: #FF5252;" class="text-outline-sm">EUSTASS KID</div>
-                    <div style="font-size: 10px; color: #F4E4C1; font-weight: 700;">Tanque Transformable</div>
-                    <div style="font-size: 9px; color: #FFD54F;">Pasiva: Chatarra (-2s CD H1/H2)</div>
-                  </div>
-                </div>
-                <div class="stat-bars">
-                  <div class="stat-row"><span class="stat-label">❤️ HP</span><div class="stat-track"><div class="stat-fill" data-stat-w="100%" style="background:#4CAF50;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">⚔️ DMG</span><div class="stat-track"><div class="stat-fill" data-stat-w="55%" style="background:#F44336;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">👟 VEL</span><div class="stat-track"><div class="stat-fill" data-stat-w="64%" style="background:#29B6F6;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">🛡️ ARM</span><div class="stat-track"><div class="stat-fill" data-stat-w="62%" style="background:#90A4AE;"></div></div></div>
-                </div>
-                <div class="skill-pills">
-                  <div class="skill-pill">🧲 Attract</div>
-                  <div class="skill-pill">🤖 Rotten</div>
-                  <div class="skill-pill">⚡ Damned</div>
-                </div>
-                <div class="char-details-box">
-                  <b>Combo:</b> 2 rectos + Barrido 120° (empuja + aturde).<br>
-                  <b>H1:</b> Attract → Repel • <b>H2:</b> Punk Rotten 1.5× • <b>H3:</b> Cañón Damned Punk (1.75×/tick).
-                </div>
-              </div>
-              <div class="btn-3d btn-gold btn-zarpar text-outline-sm">¡ZARPAR CON KID!</div>
-            </div>
-
-            <!-- 9. KILLER (Épico 1.25x) -->
-            <div class="char-card rarity-epico" data-char="killer" data-index="8">
-              <span class="rarity-badge epico text-outline-sm">ÉPICO</span>
-              <div class="char-card-body">
-                <div class="char-card-top">
-                  <canvas id="preview-killer" class="char-preview-canvas" width="52" height="52"></canvas>
-                  <div>
-                    <div style="font-weight: 900; font-size: 15px; color: #FF8A80;" class="text-outline-sm">KILLER</div>
-                    <div style="font-size: 10px; color: #F4E4C1; font-weight: 700;">DPS Sangrado / Frenesí</div>
-                    <div style="font-size: 9px; color: #FFCDD2;">Pasiva: Sangrado 5 stacks = Desgarro 5×</div>
-                  </div>
-                </div>
-                <div class="stat-bars">
-                  <div class="stat-row"><span class="stat-label">❤️ HP</span><div class="stat-track"><div class="stat-fill" data-stat-w="63%" style="background:#4CAF50;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">⚔️ DMG</span><div class="stat-track"><div class="stat-fill" data-stat-w="37%" style="background:#F44336;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">👟 VEL</span><div class="stat-track"><div class="stat-fill" data-stat-w="100%" style="background:#29B6F6;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">🛡️ ARM</span><div class="stat-track"><div class="stat-fill" data-stat-w="26%" style="background:#90A4AE;"></div></div></div>
-                </div>
-                <div class="skill-pills">
-                  <div class="skill-pill">🌀 Scythe</div>
-                  <div class="skill-pill">🩸 Bloodlust</div>
-                  <div class="skill-pill">👹 Frenzy</div>
-                </div>
-                <div class="char-details-box">
-                  <b>Dash:</b> 2 cargas voltereta + sangrado. <b>Combo 5:</b> Onda sangra.<br>
-                  <b>H1:</b> Corte 1.5s (+2 stacks) • <b>H2:</b> Bloodlust • <b>H3:</b> Frenzy 2× dmg + rompe escudo.
-                </div>
-              </div>
-              <div class="btn-3d btn-gold btn-zarpar text-outline-sm">¡ZARPAR CON KILLER!</div>
-            </div>
-
-            <!-- 10. SHANKS (STRAW HAT) (Legendario 1.5x) -->
-            <div class="char-card rarity-legendario" data-char="shanks" data-index="9">
-              <span class="rarity-badge legendario text-outline-sm">LEGENDARIO</span>
-              <div class="char-card-body">
-                <div class="char-card-top">
-                  <canvas id="preview-shanks" class="char-preview-canvas" width="52" height="52"></canvas>
-                  <div>
-                    <div style="font-weight: 900; font-size: 15px; color: #FF5252;" class="text-outline-sm">SHANKS</div>
-                    <div style="font-size: 10px; color: #F4E4C1; font-weight: 700;">Emperador / Haki Supremo</div>
-                    <div style="font-size: 9px; color: #FF8A80;">Pasiva: 5-Hit Bleed Combo + Haki en Kills</div>
-                  </div>
-                </div>
-                <div class="stat-bars">
-                  <div class="stat-row"><span class="stat-label">❤️ HP</span><div class="stat-track"><div class="stat-fill" data-stat-w="80%" style="background:#4CAF50;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">⚔️ DMG</span><div class="stat-track"><div class="stat-fill" data-stat-w="88%" style="background:#F44336;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">👟 VEL</span><div class="stat-track"><div class="stat-fill" data-stat-w="80%" style="background:#29B6F6;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">🛡️ ARM</span><div class="stat-track"><div class="stat-fill" data-stat-w="37%" style="background:#90A4AE;"></div></div></div>
-                </div>
-                <div class="skill-pills">
-                  <div class="skill-pill">👑 Conqueror's Haki</div>
-                  <div class="skill-pill">🗡️ Divine Departure</div>
-                  <div class="skill-pill">👁️ Future Sight</div>
-                </div>
-                <div class="char-details-box">
-                  <b>Gryphon Combo:</b> 5 cortes rápidos con sangrado y remate de arco rojo (180px).<br>
-                  <b>H1:</b> Conqueror's Haki aturde hasta 4s según Haki • <b>H2:</b> Divine Departure cadena de 5 toques (1.0×→2.5× + Círculo Haki) • <b>H3:</b> Future Sight 5s de esquiva e inmunidad.
-                </div>
-              </div>
-              <div class="btn-3d btn-gold btn-zarpar text-outline-sm">¡ZARPAR CON SHANKS!</div>
-            </div>
-
-            <!-- 11. BARBABLANCA (Legendario 1.5x) -->
-            <div class="char-card rarity-legendario" data-char="whitebeard" data-index="10">
-              <span class="rarity-badge legendario text-outline-sm">LEGENDARIO</span>
-              <div class="char-card-body">
-                <div class="char-card-top">
-                  <canvas id="preview-whitebeard" class="char-preview-canvas" width="52" height="52"></canvas>
-                  <div>
-                    <div style="font-weight: 900; font-size: 15px; color: #ECEFF1;" class="text-outline-sm">BARBABLANCA</div>
-                    <div style="font-size: 10px; color: #F4E4C1; font-weight: 700;">Hombre Más Fuerte / Devastador Sísmico</div>
-                    <div style="font-size: 9px; color: #CFD8DC;">Pasiva: Resistencia Sísmica + Gura Gura en Kills</div>
-                  </div>
-                </div>
-                <div class="stat-bars">
-                  <div class="stat-row"><span class="stat-label">❤️ HP</span><div class="stat-track"><div class="stat-fill" data-stat-w="100%" style="background:#4CAF50;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">⚔️ DMG</span><div class="stat-track"><div class="stat-fill" data-stat-w="86%" style="background:#F44336;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">👟 VEL</span><div class="stat-track"><div class="stat-fill" data-stat-w="55%" style="background:#29B6F6;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">🛡️ ARM</span><div class="stat-track"><div class="stat-fill" data-stat-w="62%" style="background:#90A4AE;"></div></div></div>
-                </div>
-                <div class="skill-pills">
-                  <div class="skill-pill">⚡ Seaquake</div>
-                  <div class="skill-pill">🔱 Island Shaking</div>
-                  <div class="skill-pill">🌊 Island Shaking</div>
-                </div>
-                <div class="char-details-box">
-                  <b>Murakumogiri:</b> Tajo sísmico (200px), combo sangrado y corte eléctrico (250px).<br>
-                  <b>H1:</b> Seaquake masivo 350px • <b>H2:</b> Island Shaking salto 2 cargas • <b>H3:</b> Island Shaking zona sísmica (escudo 50% y lentitud 40%).
-                </div>
-              </div>
-              <div class="btn-3d btn-gold btn-zarpar text-outline-sm">¡ZARPAR CON BARBABLANCA!</div>
-            </div>
-
-            <!-- 12. LUFFY (POST TIME SKIP) (Legendario 1.5x) -->
-            <div class="char-card rarity-legendario" data-char="luffy_pts" data-index="11">
-              <span class="rarity-badge legendario text-outline-sm">LEGENDARIO</span>
-              <div class="char-card-body">
-                <div class="char-card-top">
-                  <canvas id="preview-luffy_pts" class="char-preview-canvas" width="52" height="52"></canvas>
-                  <div>
-                    <div style="font-weight: 900; font-size: 15px; color: #E53935;" class="text-outline-sm">LUFFY (PTS)</div>
-                    <div style="font-size: 10px; color: #F4E4C1; font-weight: 700;">Capitán Sombrero de Paja / Busoshoku</div>
-                    <div style="font-size: 9px; color: #FF8A80;">Pasiva: Golpes con Haki + Gear 2 en Kills</div>
-                  </div>
-                </div>
-                <div class="stat-bars">
-                  <div class="stat-row"><span class="stat-label">❤️ HP</span><div class="stat-track"><div class="stat-fill" data-stat-w="92%" style="background:#4CAF50;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">⚔️ DMG</span><div class="stat-track"><div class="stat-fill" data-stat-w="86%" style="background:#F44336;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">👟 VEL</span><div class="stat-track"><div class="stat-fill" data-stat-w="80%" style="background:#29B6F6;"></div></div></div>
-                  <div class="stat-row"><span class="stat-label">🛡️ ARM</span><div class="stat-track"><div class="stat-fill" data-stat-w="50%" style="background:#90A4AE;"></div></div></div>
-                </div>
-                <div class="skill-pills">
-                  <div class="skill-pill">🔥 Red Hawk Gatling</div>
-                  <div class="skill-pill">💨 Gear 2nd</div>
-                  <div class="skill-pill">🦍 King Kong Gun</div>
-                </div>
-                <div class="char-details-box">
-                  <b>Busoshoku Combo:</b> Jet Pistol ×2, Jet Sweep (empuje) y Jet Bazooka (mini-Red Hawk).<br>
-                  <b>H1:</b> Red Hawk Gatling 15 golpes + remate • <b>H2:</b> Gear 2nd (+25% vel atk, ×1.4 dmg, +1 dash) • <b>H3:</b> King Kong Gun recargable (hasta 8×).
-                </div>
-              </div>
-              <div class="btn-3d btn-gold btn-zarpar text-outline-sm">¡ZARPAR CON LUFFY (PTS)!</div>
-            </div>
-          </div>
-
-          <!-- Indicador de scroll: 12 puntos -->
-          <div id="carousel-dots" class="carousel-dots">
-            <div class="carousel-dot active" data-dot="0"></div>
-            <div class="carousel-dot" data-dot="1"></div>
-            <div class="carousel-dot" data-dot="2"></div>
-            <div class="carousel-dot" data-dot="3"></div>
-            <div class="carousel-dot" data-dot="4"></div>
-            <div class="carousel-dot" data-dot="5"></div>
-            <div class="carousel-dot" data-dot="6"></div>
-            <div class="carousel-dot" data-dot="7"></div>
-            <div class="carousel-dot" data-dot="8"></div>
-            <div class="carousel-dot" data-dot="9"></div>
-            <div class="carousel-dot" data-dot="10"></div>
-            <div class="carousel-dot" data-dot="11"></div>
-          </div>
+          <div id="carousel-dots" class="carousel-dots"></div>
         </div>
 
         <!-- 3. PANTALLA DE MEJORAS ROGUELIKE (MODO SEGURO DE 3 CAPAS) -->

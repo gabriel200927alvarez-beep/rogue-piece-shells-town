@@ -53,3 +53,96 @@ export function calculateConquerorStunDuration(shanksHaki: number): number {
   const clamped = Math.max(0, Math.min(100, shanksHaki));
   return Number((1.0 + (clamped / 100) * 3.2).toFixed(2)); // 1.0s @ 0 -> 4.2s @ 100
 }
+
+export function drainGear2ndResource(
+  energy: number,
+  dt: number,
+  drainPerSec = 10
+): { energy: number; active: boolean; ended: boolean } {
+  const next = Math.max(0, energy - drainPerSec * dt);
+  const ended = next <= 0;
+  return {
+    energy: Number(next.toFixed(4)),
+    active: !ended,
+    ended
+  };
+}
+
+export function drainWhitebeardQuake(
+  energy: number,
+  dt: number,
+  drainPerSec = 10
+): { energy: number; active: boolean; ended: boolean } {
+  const next = Math.max(0, energy - drainPerSec * dt);
+  const ended = next <= 0;
+  return {
+    energy: Number(next.toFixed(4)),
+    active: !ended,
+    ended
+  };
+}
+
+export function calculateLuffyPtsComboCooldown(
+  step: number,
+  gear2ndActive: boolean
+): { attackCooldown: number; comboResetTimer: number } {
+  const g2Mult = gear2ndActive ? 0.8 : 1.0;
+  if (step === 2) {
+    return {
+      attackCooldown: Number((0.4 * g2Mult).toFixed(4)),
+      comboResetTimer: 0.7
+    };
+  }
+  if (step === 3) {
+    return {
+      attackCooldown: Number((0.35 * g2Mult).toFixed(4)),
+      comboResetTimer: 0.7
+    };
+  }
+  return {
+    attackCooldown: Number((0.35 * g2Mult).toFixed(4)),
+    comboResetTimer: 0.65
+  };
+}
+
+export function calculateFrankyCoupDeVentScaling(
+  cola: number,
+  maxCola = 50
+): { colaSpent: number; dmgMult: number; rangeMult: number; angleMult: number } {
+  const spent = Math.max(0, Math.min(maxCola, cola));
+  const ratio = maxCola > 0 ? spent / maxCola : 0;
+  return {
+    colaSpent: spent,
+    dmgMult: Number((1.0 + ratio * 0.6).toFixed(3)),
+    rangeMult: Number((1.0 + ratio * 0.4).toFixed(3)),
+    angleMult: Number((1.0 + ratio * 0.25).toFixed(3))
+  };
+}
+
+export function drainGigantResource(
+  energy: number,
+  dt: number,
+  drainPerSec = 10
+): { energy: number; active: boolean; ended: boolean } {
+  const next = Math.max(0, energy - drainPerSec * dt);
+  const ended = next <= 0;
+  return {
+    energy: Number(next.toFixed(4)),
+    active: !ended,
+    ended
+  };
+}
+
+export function calculateDawnWhipRadius(
+  progress: number,
+  minR = 55,
+  maxR = 250
+): number {
+  const u = Math.max(0, Math.min(1, progress));
+  return Number((minR * Math.pow(maxR / minR, u)).toFixed(2));
+}
+
+export function shouldTriggerToonForce(roll: number): boolean {
+  return roll >= 0 && roll < 0.02;
+}
+

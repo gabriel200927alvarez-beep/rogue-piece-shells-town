@@ -12,3 +12,5 @@
 - 2026-11-23: Versión 1.9g completada. Migración completa a arquitectura Vite + React 19 + TypeScript + Tailwind CSS 4. Codebase modularizado: config.ts, state.ts, audio.ts, camera.ts, input.ts, physics.ts, entities.ts, abilities.ts, rendering.ts, rules.ts. Build system con Vite 8 para bundle optimizado (414KB JS gzipped 119KB). GitHub Actions actualizados: release.yml con build automático y adjunto HTML, pages.yml con build+deploy a GitHub Pages. Despliegue en GitHub Pages funcional. v1.9f mechanics intactas.
 
 - 2026-11-23: Versión 1.9h completada. Fix: copiar build de Vite (dist/) a raíz para que Hefesto preview funcione. index.html raíz ahora es build de producción (48KB) con assets/ bundlados. GitHub Pages redeployado exitosamente. v1.9g mechanics intactas.
+
+- 2026-11-23: Versión 1.9i completada. Nueva versión desde zip subido (v1.9i). Build Vite 8 (414KB JS, 24KB CSS, 48KB HTML gzipped 8KB). Copiado dist/ a raíz para Hefesto preview. GitHub Pages y Release v1.9i actualizados. v1.9h mechanics intactas.

@@ -2,7 +2,8 @@
 // 7 & 9. RENDERIZADO: FONDO OFF-SCREEN, PREVIEWS, JUGADOR, ENEMIGOS Y VFX
 // ============================================================================
 
-import { CONFIG, CHARACTERS } from './config';
+import { CONFIG } from './config';
+import { CHARACTER_LIST, getCharacterModule } from './characters/index';
 import { STATE } from './state';
 import { CAMERA } from './camera';
 import { INPUT_TOUCH } from './input';
@@ -132,14 +133,13 @@ export function renderCharacterPreviews(timeMs: number): void {
   if (STATE.screen !== 'select') return;
   const t = timeMs * 0.005;
 
-  ['luffy', 'zoro', 'sanji', 'usopp', 'franky', 'robin', 'law', 'kid', 'killer', 'shanks', 'whitebeard', 'luffy_pts'].forEach((id, idx) => {
-    const c = document.getElementById(`preview-${id}`) as HTMLCanvasElement | null;
+  CHARACTER_LIST.forEach((mod, idx) => {
+    const c = document.getElementById(`preview-${mod.id}`) as HTMLCanvasElement | null;
     if (!c) return;
     const pctx = c.getContext('2d');
     if (!pctx) return;
     pctx.clearRect(0, 0, 52, 52);
 
-    const cfg = CHARACTERS[id];
     const bob = Math.sin(t + idx) * 2.0;
 
     pctx.save();
@@ -150,280 +150,7 @@ export function renderCharacterPreviews(timeMs: number): void {
     pctx.ellipse(0, 15 - bob, 14, 5, 0, 0, Math.PI * 2);
     pctx.fill();
 
-    if (id === 'luffy') {
-      const armSwing = Math.sin(t * 1.4) * 3.5;
-      pctx.fillStyle = '#FFCC80';
-      pctx.strokeStyle = '#000';
-      pctx.lineWidth = 2;
-      pctx.beginPath();
-      pctx.arc(-14, 2 + armSwing, 4.5, 0, Math.PI * 2);
-      pctx.fill(); pctx.stroke();
-      pctx.beginPath();
-      pctx.arc(14, 2 - armSwing, 4.5, 0, Math.PI * 2);
-      pctx.fill(); pctx.stroke();
-
-      pctx.fillStyle = '#C8102E';
-      pctx.beginPath();
-      pctx.arc(0, 1, 13, 0, Math.PI * 2);
-      pctx.fill(); pctx.stroke();
-
-      pctx.fillStyle = '#F5C518';
-      pctx.beginPath();
-      pctx.ellipse(0, -6, 17, 7, 0, 0, Math.PI * 2);
-      pctx.fill(); pctx.stroke();
-
-      pctx.fillStyle = '#E6B400';
-      pctx.beginPath();
-      pctx.arc(0, -9, 9.5, Math.PI, 0);
-      pctx.fill(); pctx.stroke();
-
-      pctx.strokeStyle = '#C8102E';
-      pctx.lineWidth = 2.8;
-      pctx.beginPath();
-      pctx.moveTo(-9.5, -8.5);
-      pctx.lineTo(9.5, -8.5);
-      pctx.stroke();
-    } else if (id === 'zoro') {
-      const swordBob = Math.sin(t * 1.3) * 2;
-      pctx.fillStyle = '#FFCC80';
-      pctx.strokeStyle = '#000';
-      pctx.lineWidth = 2;
-      pctx.beginPath();
-      pctx.arc(-13, 2 - swordBob, 4, 0, Math.PI * 2);
-      pctx.arc(13, 2 + swordBob, 4, 0, Math.PI * 2);
-      pctx.fill(); pctx.stroke();
-
-      pctx.fillStyle = cfg.vestColor;
-      pctx.beginPath(); pctx.arc(0, 1, 13, 0, Math.PI * 2); pctx.fill(); pctx.stroke();
-
-      pctx.strokeStyle = '#E0E0E0'; pctx.lineWidth = 2.5;
-      pctx.beginPath();
-      pctx.moveTo(-18, 9 + swordBob); pctx.lineTo(18, -7 - swordBob);
-      pctx.moveTo(-18, -7 + swordBob); pctx.lineTo(18, 9 - swordBob);
-      pctx.stroke();
-
-      pctx.fillStyle = '#2E7D32';
-      pctx.beginPath(); pctx.arc(0, -5, 9.5, 0, Math.PI * 2); pctx.fill(); pctx.stroke();
-    } else if (id === 'sanji') {
-      const kickSwing = Math.sin(t * 1.6) * 3;
-      pctx.fillStyle = cfg.vestColor;
-      pctx.strokeStyle = '#000'; pctx.lineWidth = 2;
-      pctx.beginPath(); pctx.arc(0, 1, 13, 0, Math.PI * 2); pctx.fill(); pctx.stroke();
-      pctx.fillStyle = '#FF7043';
-      pctx.beginPath(); pctx.arc(11, 9 + kickSwing, 5.5, 0, Math.PI * 2); pctx.fill();
-      pctx.fillStyle = '#FDD835';
-      pctx.beginPath(); pctx.arc(0, -5, 9.5, 0, Math.PI * 2); pctx.fill(); pctx.stroke();
-    } else if (id === 'usopp') {
-      pctx.fillStyle = '#6B8E23';
-      pctx.strokeStyle = '#000'; pctx.lineWidth = 2;
-      pctx.beginPath(); pctx.ellipse(0, 2, 10, 14, 0, 0, Math.PI * 2); pctx.fill(); pctx.stroke();
-      pctx.fillStyle = '#5D4037';
-      pctx.beginPath(); pctx.ellipse(-5, -8, 13, 6.5, -0.25, 0, Math.PI * 2); pctx.fill(); pctx.stroke();
-      pctx.strokeStyle = '#3E2723'; pctx.lineWidth = 3;
-      pctx.beginPath(); pctx.moveTo(9, 2); pctx.lineTo(17, -5); pctx.moveTo(9, 2); pctx.lineTo(17, 6); pctx.stroke();
-    } else if (id === 'franky') {
-      pctx.fillStyle = '#00BCD4';
-      pctx.strokeStyle = '#000'; pctx.lineWidth = 2;
-      pctx.fillRect(-13, -9, 26, 22);
-      pctx.strokeRect(-13, -9, 26, 22);
-      pctx.fillStyle = '#616161';
-      pctx.beginPath(); pctx.arc(14, 2, 9.5, 0, Math.PI * 2); pctx.fill(); pctx.stroke();
-      pctx.fillStyle = '#D32F2F';
-      pctx.fillRect(10, -1, 7, 5);
-      pctx.fillStyle = '#4DD0E1';
-      pctx.fillRect(-9, -16, 18, 7);
-    } else if (id === 'robin') {
-      pctx.fillStyle = '#7B1FA2';
-      pctx.strokeStyle = '#000'; pctx.lineWidth = 2;
-      pctx.beginPath(); pctx.ellipse(0, 2, 9.5, 15, 0, 0, Math.PI * 2); pctx.fill(); pctx.stroke();
-      pctx.fillStyle = '#1976D2';
-      pctx.fillRect(-7, -2, 14, 5);
-      pctx.fillStyle = '#1A1A1A';
-      pctx.beginPath(); pctx.arc(0, -9, 8.5, 0, Math.PI * 2); pctx.fill();
-    } else if (id === 'law') {
-      pctx.fillStyle = '#1A1A1A';
-      pctx.strokeStyle = '#000'; pctx.lineWidth = 2;
-      pctx.beginPath(); pctx.roundRect(-11, -8, 22, 22, 6); pctx.fill(); pctx.stroke();
-      pctx.fillStyle = '#FDD835';
-      pctx.fillRect(-11, 6, 22, 6);
-      pctx.strokeStyle = '#E0E0E0'; pctx.lineWidth = 3;
-      pctx.beginPath(); pctx.moveTo(-14, 12); pctx.lineTo(18, -14); pctx.stroke();
-      pctx.fillStyle = '#F5F5F5';
-      pctx.beginPath(); pctx.ellipse(0, -10, 12, 8, 0, 0, Math.PI * 2); pctx.fill(); pctx.stroke();
-      pctx.fillStyle = '#1A1A1A';
-      pctx.beginPath();
-      pctx.arc(-5, -10, 2, 0, Math.PI * 2);
-      pctx.arc(4, -11, 2, 0, Math.PI * 2);
-      pctx.arc(0, -8, 1.8, 0, Math.PI * 2);
-      pctx.fill();
-    } else if (id === 'kid') {
-      pctx.fillStyle = '#5D4037';
-      pctx.strokeStyle = '#000'; pctx.lineWidth = 2;
-      pctx.beginPath(); pctx.roundRect(-13, -8, 22, 22, 6); pctx.fill(); pctx.stroke();
-      const armPulse = Math.sin(t * 1.4) * 1.5;
-      pctx.fillStyle = '#757575';
-      pctx.beginPath(); pctx.arc(13, 2 + armPulse, 11, 0, Math.PI * 2); pctx.fill(); pctx.stroke();
-      pctx.fillStyle = '#D32F2F';
-      pctx.fillRect(8, -2 + armPulse, 9, 4);
-      pctx.fillStyle = '#FFD54F';
-      pctx.beginPath();
-      pctx.arc(18 + Math.cos(t * 3) * 3, -5 + Math.sin(t * 3) * 3, 2, 0, Math.PI * 2);
-      pctx.fill();
-      pctx.fillStyle = '#D32F2F';
-      pctx.beginPath();
-      pctx.moveTo(-10, -8); pctx.lineTo(-7, -18); pctx.lineTo(-2, -11);
-      pctx.lineTo(2, -19); pctx.lineTo(6, -11); pctx.lineTo(10, -17); pctx.lineTo(10, -8);
-      pctx.closePath(); pctx.fill(); pctx.stroke();
-    } else if (id === 'killer') {
-      const spin = Math.sin(t * 2.2) * 0.35;
-      pctx.fillStyle = '#1A237E';
-      pctx.strokeStyle = '#000'; pctx.lineWidth = 2;
-      pctx.beginPath(); pctx.ellipse(0, 3, 10, 12, 0, 0, Math.PI * 2); pctx.fill(); pctx.stroke();
-      pctx.fillStyle = '#FFD54F';
-      pctx.beginPath(); pctx.arc(0, -6, 12, 0, Math.PI * 2); pctx.fill(); pctx.stroke();
-      pctx.fillStyle = '#ECEFF1';
-      pctx.beginPath(); pctx.arc(0, -6, 7.5, 0, Math.PI * 2); pctx.fill(); pctx.stroke();
-      pctx.strokeStyle = '#1976D2'; pctx.lineWidth = 1.5;
-      pctx.beginPath(); pctx.moveTo(-5, -8); pctx.lineTo(5, -4); pctx.moveTo(5, -8); pctx.lineTo(-5, -4); pctx.stroke();
-      pctx.save();
-      pctx.rotate(spin);
-      pctx.strokeStyle = '#CFD8DC'; pctx.lineWidth = 2.5;
-      pctx.beginPath();
-      pctx.arc(-15, 2, 7, -Math.PI * 0.5, Math.PI * 0.5);
-      pctx.arc(15, 2, 7, Math.PI * 0.5, Math.PI * 1.5);
-      pctx.stroke();
-      pctx.restore();
-    } else if (id === 'shanks') {
-      // SHANKS (Romance Dawn): Sombrero paja, pelo rojo, capa marrón, UN SOLO BRAZO (manga izq vacía)
-      pctx.fillStyle = '#5D4037';
-      pctx.beginPath();
-      pctx.ellipse(0, 3, 13, 14, 0, 0, Math.PI * 2);
-      pctx.fill();
-
-      pctx.fillStyle = '#F5F5F5';
-      pctx.strokeStyle = '#000'; pctx.lineWidth = 1.8;
-      pctx.beginPath();
-      pctx.ellipse(0, 2, 9, 11, 0, 0, Math.PI * 2);
-      pctx.fill(); pctx.stroke();
-
-      // Manga izquierda vacía ondeando (sin brazo)
-      pctx.fillStyle = '#E0E0E0';
-      pctx.beginPath();
-      pctx.moveTo(-9, -2);
-      pctx.lineTo(-14, 4 + Math.sin(t * 2) * 2);
-      pctx.lineTo(-8, 6);
-      pctx.closePath();
-      pctx.fill(); pctx.stroke();
-
-      // Brazo derecho sosteniendo Gryphon
-      pctx.fillStyle = '#FFCC80';
-      pctx.beginPath();
-      pctx.arc(10, 4, 3.5, 0, Math.PI * 2);
-      pctx.fill(); pctx.stroke();
-      pctx.strokeStyle = '#9E9E9E'; pctx.lineWidth = 2.5;
-      pctx.beginPath();
-      pctx.moveTo(10, 4); pctx.lineTo(16, -6);
-      pctx.stroke();
-      pctx.strokeStyle = '#FFB300'; pctx.lineWidth = 2.8;
-      pctx.beginPath();
-      pctx.moveTo(8, 2); pctx.lineTo(12, 6);
-      pctx.stroke();
-
-      // Pelo rojo y Sombrero de paja
-      pctx.fillStyle = '#D32F2F';
-      pctx.beginPath();
-      pctx.arc(0, -6, 9, 0, Math.PI * 2);
-      pctx.fill();
-
-      pctx.fillStyle = '#FBC02D';
-      pctx.strokeStyle = '#7A5600'; pctx.lineWidth = 1.2;
-      pctx.beginPath();
-      pctx.ellipse(0, -9, 14, 6, 0, 0, Math.PI * 2);
-      pctx.fill(); pctx.stroke();
-      pctx.fillStyle = '#B71C1C';
-      pctx.fillRect(-8, -12, 16, 2.5);
-      pctx.fillStyle = '#FBC02D';
-      pctx.beginPath();
-      pctx.arc(0, -11, 7, Math.PI, 0);
-      pctx.fill(); pctx.stroke();
-    } else if (id === 'whitebeard') {
-      // BARBABLANCA: Corpulento, bigote blanco media luna, bandana, capa blanca, bisento
-      pctx.fillStyle = '#ECEFF1';
-      pctx.strokeStyle = '#000'; pctx.lineWidth = 2;
-      pctx.beginPath();
-      pctx.ellipse(0, 4, 15, 14, 0, 0, Math.PI * 2);
-      pctx.fill(); pctx.stroke();
-
-      pctx.fillStyle = '#FFCC80';
-      pctx.beginPath();
-      pctx.arc(0, 3, 10, 0, Math.PI * 2);
-      pctx.fill();
-
-      // Bisento Murakumogiri
-      pctx.strokeStyle = '#78909C'; pctx.lineWidth = 2.5;
-      pctx.beginPath();
-      pctx.moveTo(-16, -18); pctx.lineTo(-6, 18);
-      pctx.stroke();
-      pctx.strokeStyle = '#FFB300'; pctx.lineWidth = 2.8;
-      pctx.beginPath();
-      pctx.arc(-16, -18, 5, 0, Math.PI * 0.7);
-      pctx.stroke();
-
-      // Cabeza y bandana
-      pctx.fillStyle = '#37474F';
-      pctx.beginPath();
-      pctx.arc(0, -6, 9, Math.PI, 0);
-      pctx.fill();
-
-      // Bigote blanco en media luna característico
-      pctx.strokeStyle = '#FFFFFF'; pctx.lineWidth = 3.0;
-      pctx.beginPath();
-      pctx.arc(0, -7, 10, 0.2, Math.PI - 0.2);
-      pctx.stroke();
-    } else if (id === 'luffy_pts') {
-      // LUFFY (POST TIME SKIP): Kimono rojo, cicatriz en X, pelo negro, sombrero de paja
-      pctx.fillStyle = '#D32F2F';
-      pctx.strokeStyle = '#000'; pctx.lineWidth = 2;
-      pctx.beginPath();
-      pctx.ellipse(0, 3, 11, 12, 0, 0, Math.PI * 2);
-      pctx.fill(); pctx.stroke();
-
-      // Pecho descubierto con cicatriz en X
-      pctx.fillStyle = '#FFCC80';
-      pctx.beginPath();
-      pctx.arc(0, 1, 6, 0, Math.PI * 2);
-      pctx.fill();
-      pctx.strokeStyle = '#8D6E63'; pctx.lineWidth = 1.8;
-      pctx.beginPath();
-      pctx.moveTo(-3, -2); pctx.lineTo(3, 4);
-      pctx.moveTo(3, -2); pctx.lineTo(-3, 4);
-      pctx.stroke();
-
-      // Brazos elásticos con Haki
-      pctx.fillStyle = '#212121';
-      pctx.beginPath();
-      pctx.arc(-11, 3, 4, 0, Math.PI * 2);
-      pctx.arc(11, 3, 4, 0, Math.PI * 2);
-      pctx.fill();
-
-      // Sombrero de paja y pelo negro
-      pctx.fillStyle = '#1A1A1A';
-      pctx.beginPath();
-      pctx.arc(0, -6, 8.5, 0, Math.PI * 2);
-      pctx.fill();
-
-      pctx.fillStyle = '#FBC02D';
-      pctx.strokeStyle = '#7A5600'; pctx.lineWidth = 1.2;
-      pctx.beginPath();
-      pctx.ellipse(0, -8, 14, 5.5, 0, 0, Math.PI * 2);
-      pctx.fill(); pctx.stroke();
-      pctx.fillStyle = '#B71C1C';
-      pctx.fillRect(-7, -11, 14, 2.2);
-      pctx.fillStyle = '#FBC02D';
-      pctx.beginPath();
-      pctx.arc(0, -10, 6.5, Math.PI, 0);
-      pctx.fill(); pctx.stroke();
-    }
+    mod.drawPreview(pctx, t, mod);
 
     pctx.restore();
   });
@@ -444,14 +171,13 @@ export function render(): void {
     ctx.translate(sx, sy);
   }
 
-  // Zoom out suave durante/después de la Quake Zone de Barbablanca
-  const wbCamZoom = (STATE.charId === 'whitebeard' && STATE.player && typeof STATE.player.wbCameraZoom === 'number')
-    ? STATE.player.wbCameraZoom : 1.0;
-  const isWBQuakeZoom = Math.abs(wbCamZoom - 1.0) > 0.001;
-  if (isWBQuakeZoom) {
+  const charMod = getCharacterModule(STATE.charId);
+  const camZoom = charMod.getCameraZoom?.(STATE.player) ?? 1.0;
+  const isCamZoomed = Math.abs(camZoom - 1.0) > 0.001;
+  if (isCamZoomed) {
     ctx.save();
     ctx.translate(CONFIG.WIDTH / 2, CONFIG.HEIGHT / 2);
-    ctx.scale(wbCamZoom, wbCamZoom);
+    ctx.scale(camZoom, camZoom);
     ctx.translate(-CONFIG.WIDTH / 2, -CONFIG.HEIGHT / 2);
   }
 
@@ -462,131 +188,13 @@ export function render(): void {
     ctx.drawImage(bg, 0, 0);
   }
 
-  // Zona Sísmica de Barbablanca con transición suave de apertura y cierre hacia el centro
-  if (STATE.charId === 'whitebeard' && STATE.player && (STATE.player.quakeZoneTimer > 0 || STATE.player.wbQuakeVisualScale > 0.005)) {
-    const p = STATE.player;
-    const t = performance.now() * 0.005;
-    const rawScale = Math.max(0, Math.min(1, p.wbQuakeVisualScale || 0));
-    const easeScale = 1 - Math.pow(1 - rawScale, 3);
-    const radius = 250 * easeScale;
-    if (radius > 2) {
-      ctx.save();
-      const alpha = Math.min(1.0, easeScale * 1.05);
-      ctx.globalAlpha = alpha;
-
-      const grad = ctx.createRadialGradient(p.x, p.y, Math.max(2, 10 * easeScale), p.x, p.y, radius);
-      grad.addColorStop(0, 'rgba(255, 255, 255, 0.05)');
-      grad.addColorStop(0.7, 'rgba(255, 255, 255, 0.14)');
-      grad.addColorStop(1, 'rgba(255, 255, 255, 0.35)');
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Ondas concéntricas de choque
-      for (let w = 1; w <= 3; w++) {
-        const waveR = ((t * 70 + w * 80) % radius);
-        ctx.strokeStyle = `rgba(255, 255, 255, ${0.4 * (1 - waveR / radius)})`;
-        ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, waveR, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-
-      // Borde blanco pulsante con perturbación sísmica
-      ctx.strokeStyle = '#FFFFFF';
-      ctx.lineWidth = (3.5 + Math.sin(t * 8) * 1.5) * Math.max(0.4, easeScale);
-      ctx.beginPath();
-      const segs = 48;
-      for (let s = 0; s <= segs; s++) {
-        const ang = (s / segs) * Math.PI * 2;
-        const wobble = Math.sin(ang * 12 + t * 4) * 3.5 * easeScale;
-        const rx = p.x + Math.cos(ang) * (radius + wobble);
-        const ry = p.y + Math.sin(ang) * (radius + wobble);
-        if (s === 0) ctx.moveTo(rx, ry);
-        else ctx.lineTo(rx, ry);
-      }
-      ctx.closePath();
-      ctx.stroke();
-
-      // Grietas radiales que se expanden al activar y se cierran hacia Barbablanca al cancelar
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
-      ctx.lineWidth = 2 * Math.max(0.5, easeScale);
-      for (let f = 0; f < 8; f++) {
-        const fAng = (f / 8) * Math.PI * 2 + Math.sin(f + t) * 0.1;
-        ctx.beginPath();
-        ctx.moveTo(p.x, p.y);
-        for (let seg = 1; seg <= 4; seg++) {
-          const segDist = (radius * 0.85) * (seg / 4);
-          const perp = (Math.sin(seg * 3.7 + f) * 8) * easeScale;
-          const nx = p.x + Math.cos(fAng) * segDist - Math.sin(fAng) * perp;
-          const ny = p.y + Math.sin(fAng) * segDist + Math.cos(fAng) * perp;
-          ctx.lineTo(nx, ny);
-        }
-        ctx.stroke();
-      }
-      ctx.restore();
-    }
-  }
-
-  // Esfera de ROOM de Trafalgar Law: activa o desvaneciéndose en su lugar con distorsión espacial
-  if (STATE.charId === 'law' && (STATE.player.roomTimer > 0 || STATE.player.roomFadeTimer > 0)) {
-    const p = STATE.player;
-    const t = performance.now() * 0.006;
-    const isFading = p.roomTimer <= 0 && p.roomFadeTimer > 0;
-    const fadeRatio = isFading ? Math.max(0, p.roomFadeTimer / (p.roomFadeMax || 0.45)) : 1.0;
-    const cx = isFading ? p.roomFadeX : p.x;
-    const cy = isFading ? p.roomFadeY : p.y;
-    const castScale = isFading
-      ? (1.0 + (1 - fadeRatio) * 0.05)
-      : Math.min(1.0, 0.72 + ((p.roomDurationMax - p.roomTimer) / 0.16) * 0.28);
-    const r = p.roomRadius * castScale;
-    const alpha = isFading ? Math.pow(fadeRatio, 1.15) : 1.0;
-
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    const grad = ctx.createRadialGradient(cx, cy, 10, cx, cy, r);
-    grad.addColorStop(0, 'rgba(38, 198, 218, 0.06)');
-    grad.addColorStop(0.85, 'rgba(38, 198, 218, 0.24)');
-    grad.addColorStop(1, 'rgba(128, 222, 234, 0.45)');
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.strokeStyle = '#80DEEA';
-    ctx.lineWidth = isFading ? 2.5 + fadeRatio * 1.5 : 3.5;
-    ctx.beginPath();
-    const segs = 48;
-    const wobbleFreq = isFading ? 16 : 8;
-    const wobbleAmp = isFading ? (2.5 + (1 - fadeRatio) * 8.5) : 2.5;
-    for (let s = 0; s <= segs; s++) {
-      const ang = (s / segs) * Math.PI * 2;
-      const wobble = Math.sin(ang * wobbleFreq + t * (isFading ? 3.5 : 1)) * wobbleAmp;
-      const rx = cx + Math.cos(ang) * (r + wobble);
-      const ry = cy + Math.sin(ang) * (r + wobble);
-      if (s === 0) ctx.moveTo(rx, ry);
-      else ctx.lineTo(rx, ry);
-    }
-    ctx.closePath();
-    ctx.stroke();
-
-    // Efecto rápido de distorsión / corte espacial al desvanecerse
-    if (isFading) {
-      ctx.strokeStyle = `rgba(224, 247, 250, ${0.75 * fadeRatio})`;
-      ctx.lineWidth = 2;
-      for (let slice = -2; slice <= 2; slice++) {
-        const sy = cy + slice * (r * 0.28);
-        const halfW = Math.sqrt(Math.max(0, r * r - (sy - cy) * (sy - cy))) * 0.88;
-        const shift = Math.sin(t * 9 + slice * 2.1) * (1 - fadeRatio) * 26;
-        ctx.beginPath();
-        ctx.moveTo(cx - halfW + shift, sy);
-        ctx.lineTo(cx + halfW + shift, sy);
-        ctx.stroke();
-      }
-    }
-    ctx.restore();
-  }
+  charMod.drawWorldBeforePlayer?.({
+    ctx,
+    state: STATE,
+    player: STATE.player,
+    cfg: charMod,
+    t: performance.now() * 0.005
+  });
 
   for (let i = 0; i < STATE.enemies.length; i++) {
     const en = STATE.enemies[i];
@@ -909,69 +517,13 @@ export function render(): void {
 
   drawPlayer();
 
-  // Cañón electromagnético activo de Damned Punk de Kid (núcleo ondulante + anillos de pulso)
-  if (STATE.charId === 'kid' && STATE.player.damnedPunkTimer > 0) {
-    const p = STATE.player;
-    const beamLen = 460;
-    const now = performance.now() * 0.001;
-    const pulse = 1 + Math.sin(now * 42) * 0.14;
-    ctx.save();
-    ctx.translate(p.x, p.y);
-    ctx.rotate(p.damnedPunkAngle);
-
-    const beamGrad = ctx.createLinearGradient(18, 0, 18 + beamLen, 0);
-    beamGrad.addColorStop(0, 'rgba(255, 193, 7, 0.85)');
-    beamGrad.addColorStop(0.65, 'rgba(211, 47, 47, 0.65)');
-    beamGrad.addColorStop(1, 'rgba(211, 47, 47, 0)');
-    ctx.fillStyle = beamGrad;
-    ctx.beginPath();
-    ctx.moveTo(18, -14 * pulse);
-    ctx.lineTo(18 + beamLen, -30 * pulse);
-    ctx.lineTo(18 + beamLen, 30 * pulse);
-    ctx.lineTo(18, 14 * pulse);
-    ctx.closePath();
-    ctx.fill();
-
-    // Núcleo ondulante de plasma blanco/dorado
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.beginPath();
-    const segs = 14;
-    for (let s = 0; s <= segs; s++) {
-      const sx = 18 + (s / segs) * beamLen;
-      const sy = Math.sin(s * 1.4 - now * 38) * (5.5 + (s / segs) * 4);
-      if (s === 0) ctx.moveTo(sx, sy);
-      else ctx.lineTo(sx, sy);
-    }
-    ctx.strokeStyle = 'rgba(255, 193, 7, 0.92)';
-    ctx.lineWidth = 18 * pulse;
-    ctx.stroke();
-    ctx.strokeStyle = '#FFFFFF';
-    ctx.lineWidth = 7.5;
-    ctx.stroke();
-
-    // Anillos de pulso electromagnético viajando a lo largo del cañón
-    for (let rIdx = 0; rIdx < 3; rIdx++) {
-      const u = (now * 2.6 + rIdx / 3) % 1;
-      const rx = 28 + u * (beamLen - 40);
-      const rr = 14 + u * 16;
-      ctx.strokeStyle = `rgba(255, 245, 157, ${(1 - u) * 0.85})`;
-      ctx.lineWidth = 2.6;
-      ctx.beginPath();
-      ctx.ellipse(rx, 0, 5, rr, 0, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-
-    // Destello en la boca del cañón
-    ctx.fillStyle = '#FFFFFF';
-    ctx.beginPath();
-    ctx.arc(22, 0, 14 * pulse, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = '#FF5252';
-    ctx.lineWidth = 3;
-    ctx.stroke();
-    ctx.restore();
-  }
+  charMod.drawWorldAfterPlayer?.({
+    ctx,
+    state: STATE,
+    player: STATE.player,
+    cfg: charMod,
+    t: performance.now() * 0.005
+  });
 
   for (let i = 0; i < STATE.slashEffects.length; i++) {
     drawSlashEffect(STATE.slashEffects[i]);
@@ -1138,8 +690,8 @@ export function render(): void {
   }
 
   ctx.restore(); // Fin de cámara
-  if (isWBQuakeZoom) {
-    ctx.restore(); // Restaura el zoom out del 10%
+  if (isCamZoomed) {
+    ctx.restore();
   }
 
   if (INPUT_TOUCH.joystick.active) {
@@ -1200,8 +752,9 @@ export function renderMinimap(): void {
 export function drawPlayer(): void {
   if (!ensureRenderContext()) return;
   const p = STATE.player;
-  const cfg = CHARACTERS[STATE.charId];
+  const charMod = getCharacterModule(STATE.charId);
   const t = performance.now() * 0.005;
+  const rc = { ctx, state: STATE, player: p, cfg: charMod, t };
 
   ctx.save();
   ctx.translate(p.x, p.y);
@@ -1210,130 +763,19 @@ export function drawPlayer(): void {
     ctx.globalAlpha = 0.45;
   }
 
-  // Escala dinámica de salto para Barbablanca
-  if (STATE.charId === 'whitebeard' && p.wbJumpScale && p.wbJumpScale !== 1.0) {
-    ctx.scale(p.wbJumpScale, p.wbJumpScale);
+  const bodyScale = charMod.getBodyScale?.(p) ?? 1.0;
+  if (bodyScale !== 1.0) {
+    ctx.scale(bodyScale, bodyScale);
   }
 
   ctx.fillStyle = 'rgba(0,0,0,0.45)';
   ctx.beginPath();
-  const shadowScale = (STATE.charId === 'whitebeard' && p.wbJumpScale) ? p.wbJumpScale : 1.0;
-  ctx.ellipse(0, p.radius * 0.85 * shadowScale, p.radius * 0.95 * shadowScale, 8 * shadowScale, 0, 0, Math.PI * 2);
+  ctx.ellipse(0, p.radius * 0.85 * bodyScale, p.radius * 0.95 * bodyScale, 8 * bodyScale, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  if (p.stormTimer > 0) {
-    ctx.strokeStyle = 'rgba(245, 197, 24, 0.5)';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.arc(0, 0, 150 * STATE.mods.h3AreaMult, 0, Math.PI * 2);
-    ctx.stroke();
-  }
+  charMod.drawAura?.(rc);
 
-  if (STATE.charId === 'franky' && p.cola >= p.maxCola) {
-    ctx.strokeStyle = 'rgba(0, 229, 255, 0.75)';
-    ctx.lineWidth = 3.5;
-    ctx.beginPath();
-    ctx.arc(0, 0, p.radius + 7 + Math.sin(t * 2) * 2, 0, Math.PI * 2);
-    ctx.stroke();
-  }
-
-  if (STATE.charId === 'killer') {
-    if (p.killerFrenzyTimer > 0) {
-      ctx.strokeStyle = 'rgba(255, 23, 68, 0.9)';
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.arc(0, 0, p.radius + 9 + Math.sin(t * 4) * 3, 0, Math.PI * 2);
-      ctx.stroke();
-    } else if (p.ensanamientoTimer > 0) {
-      ctx.strokeStyle = 'rgba(255, 82, 82, 0.8)';
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(0, 0, p.radius + 6, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-  }
-
-  if (STATE.charId === 'shanks') {
-    const val = p.shanksHaki || 0;
-    // v1.9f: Círculo de Haki SOLO visible al 100% (lleno)
-    if (val >= 100) {
-      ctx.strokeStyle = '#D50000';
-      ctx.lineWidth = 4.5;
-      ctx.beginPath();
-      ctx.arc(0, 0, p.radius + 10 + Math.sin(t * 6) * 3, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.strokeStyle = '#FF1744';
-      ctx.lineWidth = 2;
-      for (let k = 0; k < 4; k++) {
-        const ang = t * 4 + k * Math.PI / 2;
-        const r1 = p.radius + 6;
-        const r2 = p.radius + 14 + Math.sin(t * 8 + k) * 4;
-        ctx.beginPath();
-        ctx.moveTo(Math.cos(ang) * r1, Math.sin(ang) * r1);
-        ctx.lineTo(Math.cos(ang + 0.2) * r2, Math.sin(ang + 0.2) * r2);
-        ctx.stroke();
-      }
-    }
-    // Haki < 100: no se renderiza círculo permanente
-  }
-
-  if (STATE.charId === 'whitebeard' && (p.whitebeardEnergy || 0) >= 100) {
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.arc(0, 0, p.radius + 10 + Math.sin(t * 5) * 3, 0, Math.PI * 2);
-    ctx.stroke();
-  }
-
-  if (STATE.charId === 'luffy_pts') {
-    if (p.gear2ndTimer > 0) {
-      ctx.strokeStyle = 'rgba(255, 23, 68, 0.85)';
-      ctx.lineWidth = 3.5;
-      ctx.beginPath();
-      ctx.arc(0, 0, p.radius + 6 + Math.sin(t * 8) * 2, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-    if (p.isChargingKKG) {
-      // Escudo de Haki visible durante Gear 2nd + carga de KKG (comunica carga ininterrumpible)
-      if (p.gear2ndTimer > 0) {
-        ctx.strokeStyle = '#FF1744';
-        ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.arc(0, 0, p.radius + 15 + Math.sin(t * 8) * 3, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.fillStyle = 'rgba(17, 17, 17, 0.35)';
-        ctx.beginPath();
-        ctx.arc(0, 0, p.radius + 15 + Math.sin(t * 8) * 3, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = '#111111';
-        ctx.lineWidth = 2.5;
-        for (let k = 0; k < 6; k++) {
-          const ang = t * 6 + (k * Math.PI / 3);
-          ctx.beginPath();
-          ctx.moveTo(Math.cos(ang) * (p.radius + 10), Math.sin(ang) * (p.radius + 10));
-          ctx.lineTo(Math.cos(ang + 0.3) * (p.radius + 20), Math.sin(ang + 0.3) * (p.radius + 20));
-          ctx.stroke();
-        }
-      }
-
-      // Brazo derecho inflando una enorme esfera negra con rayos rojos
-      const chargeFrac = Math.min(1.0, p.kkgChargeTimer / 2.5);
-      const ballRadius = 8 + chargeFrac * 22;
-      ctx.fillStyle = '#111111';
-      ctx.beginPath();
-      ctx.arc(16 + chargeFrac * 10, 0, ballRadius, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = '#FF1744';
-      ctx.lineWidth = 3;
-      ctx.stroke();
-    }
-  }
-
-  let extraSpin = 0;
-  if (STATE.charId === 'killer' && p.isDashing) {
-    const progress = 1 - (p.dashTimer / (p.dashDurationMax || 0.25));
-    extraSpin = progress * Math.PI * 2;
-  }
+  const extraSpin = charMod.getBodySpin?.(p) ?? 0;
 
   if (p.landSquashTimer > 0) {
     const lsq = Math.sin((p.landSquashTimer / 0.12) * Math.PI);
@@ -1354,448 +796,7 @@ export function drawPlayer(): void {
   ctx.closePath();
   ctx.fill();
 
-  if (STATE.charId === 'law') {
-    const nodachiAngle = p.attackAnimTimer > 0 ? Math.sin(p.attackAnimTimer * 25) * 0.9 : 0.25;
-    ctx.fillStyle = '#1A1A1A';
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 2.8;
-    ctx.beginPath();
-    ctx.ellipse(0, 0, 15, 21, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = '#FDD835';
-    ctx.beginPath();
-    ctx.arc(2, -13, 5, 0, Math.PI * 2);
-    ctx.arc(2, 13, 5, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.save();
-    ctx.rotate(nodachiAngle);
-    ctx.strokeStyle = '#E0E0E0';
-    ctx.lineWidth = 3.5;
-    ctx.beginPath();
-    ctx.moveTo(-16, 14);
-    ctx.lineTo(28, 18);
-    ctx.stroke();
-    ctx.strokeStyle = '#9C27B0';
-    ctx.lineWidth = 5;
-    ctx.beginPath();
-    ctx.moveTo(-16, 14);
-    ctx.lineTo(-4, 15);
-    ctx.stroke();
-    ctx.restore();
-
-    ctx.fillStyle = '#F5F5F5';
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    ctx.arc(2, 0, 12.5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = '#1A1A1A';
-    ctx.beginPath();
-    ctx.arc(-2, -6, 2.2, 0, Math.PI * 2);
-    ctx.arc(6, 5, 2.2, 0, Math.PI * 2);
-    ctx.arc(-3, 5, 2.0, 0, Math.PI * 2);
-    ctx.arc(7, -4, 2.0, 0, Math.PI * 2);
-    ctx.fill();
-  } else if (STATE.charId === 'kid') {
-    const isRotten = p.punkRottenTimer > 0;
-    const scaleFactor = isRotten ? 1.5 : 1.0;
-
-    ctx.save();
-    ctx.scale(scaleFactor, scaleFactor);
-
-    ctx.fillStyle = isRotten ? '#616161' : '#5D4037';
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.roundRect(-16, -22, 32, 44, 9);
-    ctx.fill();
-    ctx.stroke();
-
-    if (isRotten) {
-      ctx.fillStyle = '#757575';
-      ctx.beginPath();
-      ctx.arc(10, -20, 13, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-      ctx.fillStyle = '#FFC107';
-      ctx.fillRect(6, -24, 8, 8);
-    }
-
-    const armPunchOffset = p.attackAnimTimer > 0 ? 10 : Math.sin(t) * 1.5;
-    ctx.save();
-    ctx.translate(10 + armPunchOffset, 18);
-    ctx.fillStyle = '#757575';
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    ctx.arc(0, 0, isRotten ? 16 : 13.5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-    ctx.fillStyle = '#D32F2F';
-    ctx.fillRect(-5, -5, 10, 10);
-    ctx.fillStyle = '#FFD54F';
-    ctx.beginPath();
-    ctx.arc(Math.cos(t * 4) * 10, Math.sin(t * 4) * 10, 2.2, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-
-    ctx.fillStyle = '#D32F2F';
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    ctx.arc(2, 0, 13, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = '#FFC107';
-    ctx.fillRect(8, -7, 4, 14);
-
-    ctx.restore();
-  } else if (STATE.charId === 'killer') {
-    const isFrenzy = p.killerFrenzyTimer > 0;
-    const spin = isFrenzy ? t * 7.5 : t * 1.4;
-    ctx.fillStyle = isFrenzy ? '#B71C1C' : '#1A237E';
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    ctx.ellipse(0, 0, 14, 19, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = '#FFD54F';
-    ctx.beginPath();
-    ctx.arc(-3, 0, 13, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = isFrenzy ? '#FFCDD2' : '#ECEFF1';
-    ctx.beginPath();
-    ctx.arc(4, 0, 9.5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.save();
-    ctx.rotate(Math.sin(spin) * 0.45);
-    ctx.strokeStyle = isFrenzy ? '#FF1744' : '#E0E0E0';
-    ctx.lineWidth = 3.5;
-    ctx.beginPath();
-    ctx.arc(12, -16, 10, -Math.PI * 0.4, Math.PI * 0.5);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(12, 16, 10, -Math.PI * 0.5, Math.PI * 0.4);
-    ctx.stroke();
-    ctx.restore();
-  } else if (STATE.charId === 'usopp') {
-    const sway = Math.sin(t) * 0.08;
-    ctx.rotate(sway);
-
-    ctx.fillStyle = '#5D4037';
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    ctx.ellipse(-10, 0, 16, 8, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = '#6B8E23';
-    ctx.beginPath();
-    ctx.ellipse(0, 0, 14, 17, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = '#DAA520';
-    ctx.fillRect(-4, -14, 6, 28);
-
-    ctx.strokeStyle = '#3E2723';
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(10, 0); ctx.lineTo(22, 0);
-    ctx.moveTo(22, 0); ctx.lineTo(28, -9);
-    ctx.moveTo(22, 0); ctx.lineTo(28, 9);
-    ctx.stroke();
-
-    ctx.fillStyle = '#FFCC80';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(3, 0, 9, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-  } else if (STATE.charId === 'franky') {
-    const breath = Math.sin(t * 0.8) * 1.2;
-
-    ctx.fillStyle = '#00BCD4';
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.roundRect(-16, -21 - breath * 0.5, 32, 42 + breath, 8);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = '#D32F2F';
-    ctx.fillRect(-6, -15, 12, 30);
-
-    const armExtend = p.strongRightTimer > 0 ? 22 : Math.sin(t) * 2;
-    ctx.fillStyle = '#616161';
-    ctx.beginPath();
-    ctx.arc(12 + armExtend, 16, 13, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-    ctx.fillStyle = '#D32F2F';
-    ctx.fillRect(8 + armExtend, 12, 8, 8);
-
-    ctx.fillStyle = '#4DD0E1';
-    ctx.beginPath();
-    ctx.roundRect(-4, -11, 14, 22, 4);
-    ctx.fill();
-    ctx.stroke();
-  } else if (STATE.charId === 'robin') {
-    ctx.fillStyle = '#7B1FA2';
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    ctx.ellipse(0, 0, 13, 19, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = '#1976D2';
-    ctx.fillRect(-4, -14, 8, 28);
-
-    const hairSway = Math.sin(t * 0.9) * 1.5;
-    ctx.fillStyle = '#1A1A1A';
-    ctx.beginPath();
-    ctx.arc(-2, hairSway * 0.4, 11, 0, Math.PI * 2);
-    ctx.fill();
-  } else {
-    const isMoving = Math.hypot(p.vx, p.vy) > 15;
-    const swingSpeed = isMoving ? t * 2.6 : t * 1.1;
-    const armSwing = Math.sin(swingSpeed) * (isMoving ? 6.5 : 3.0);
-
-    if (STATE.charId === 'luffy') {
-      ctx.fillStyle = '#FFCC80';
-      ctx.strokeStyle = '#000';
-      ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      ctx.roundRect(-4 + armSwing, -26, 12, 8, 4);
-      ctx.fill();
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.roundRect(-4 - armSwing, 18, 12, 8, 4);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = '#C8102E';
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(0, 0, p.radius, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = '#F5C518';
-      ctx.beginPath();
-      ctx.arc(-1, 0, 16, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.strokeStyle = '#C8102E';
-      ctx.lineWidth = 3.2;
-      ctx.beginPath();
-      ctx.arc(-1, 0, 11.5, 0, Math.PI * 2);
-      ctx.stroke();
-
-      ctx.fillStyle = '#FFD54F';
-      ctx.beginPath();
-      ctx.arc(-1, 0, 9.5, 0, Math.PI * 2);
-      ctx.fill();
-    } else if (STATE.charId === 'zoro') {
-      ctx.fillStyle = '#FFCC80';
-      ctx.strokeStyle = '#000';
-      ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      ctx.roundRect(-2 + armSwing * 0.7, -25, 11, 7, 3.5);
-      ctx.roundRect(-2 - armSwing * 0.7, 18, 11, 7, 3.5);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = cfg.vestColor;
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(0, 0, p.radius, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = '#2E7D32';
-      ctx.beginPath();
-      ctx.arc(2, 0, 12, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.strokeStyle = '#E0E0E0';
-      ctx.lineWidth = 3.5;
-      ctx.beginPath();
-      ctx.moveTo(-14, 14); ctx.lineTo(24, 18);
-      ctx.moveTo(-14, -14); ctx.lineTo(24, -18);
-      ctx.stroke();
-    } else if (STATE.charId === 'sanji') {
-      ctx.fillStyle = cfg.vestColor;
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(0, 0, p.radius, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = '#FDD835';
-      ctx.beginPath();
-      ctx.arc(2, 0, 12, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-
-      if (p.diableHitsLeft > 0 || p.ifritShotsLeft > 0) {
-        ctx.fillStyle = '#FF5722';
-        ctx.beginPath();
-        ctx.arc(14, 10, 9, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#FFA726';
-        ctx.beginPath();
-        ctx.arc(14, 10, 5, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    } else if (STATE.charId === 'shanks') {
-      // SHANKS (Romance Dawn): Pelo rojo, sombrero paja, capa marrón, UN SOLO BRAZO (manga izq vacía)
-      ctx.fillStyle = '#5D4037';
-      ctx.beginPath();
-      ctx.arc(-2, 0, p.radius + 3, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#F5F5F5';
-      ctx.strokeStyle = '#000'; ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      ctx.arc(0, 0, p.radius, 0, Math.PI * 2);
-      ctx.fill(); ctx.stroke();
-
-      // Manga izquierda vacía ondeando
-      ctx.fillStyle = '#E0E0E0';
-      ctx.beginPath();
-      ctx.moveTo(-10, -p.radius * 0.7);
-      ctx.lineTo(-18, -p.radius * 0.2 + Math.sin(t * 2) * 2);
-      ctx.lineTo(-8, 0);
-      ctx.closePath();
-      ctx.fill(); ctx.stroke();
-
-      // Brazo derecho con Gryphon
-      ctx.fillStyle = '#FFCC80';
-      ctx.beginPath();
-      ctx.arc(12, 14, 5, 0, Math.PI * 2);
-      ctx.fill(); ctx.stroke();
-      ctx.strokeStyle = '#9E9E9E'; ctx.lineWidth = 3.5;
-      ctx.beginPath();
-      ctx.moveTo(12, 14); ctx.lineTo(26, 18);
-      ctx.stroke();
-      ctx.strokeStyle = '#FFB300'; ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.moveTo(10, 11); ctx.lineTo(14, 17);
-      ctx.stroke();
-
-      // Pelo rojo y Sombrero de paja
-      ctx.fillStyle = '#D32F2F';
-      ctx.beginPath();
-      ctx.arc(-2, 0, 14, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#FBC02D';
-      ctx.strokeStyle = '#7A5600'; ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.ellipse(-1, 0, 18, 9, 0, 0, Math.PI * 2);
-      ctx.fill(); ctx.stroke();
-      ctx.fillStyle = '#B71C1C';
-      ctx.fillRect(-10, -3, 18, 3.5);
-      ctx.fillStyle = '#FBC02D';
-      ctx.beginPath();
-      ctx.arc(-1, -1, 10, Math.PI, 0);
-      ctx.fill(); ctx.stroke();
-    } else if (STATE.charId === 'whitebeard') {
-      // BARBABLANCA: Enorme, corpulento, bigote blanco media luna, bandana, capa blanca, bisento
-      ctx.fillStyle = '#ECEFF1';
-      ctx.strokeStyle = '#000'; ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(-3, 0, p.radius + 6, 0, Math.PI * 2);
-      ctx.fill(); ctx.stroke();
-
-      ctx.fillStyle = '#FFCC80';
-      ctx.beginPath();
-      ctx.arc(0, 0, p.radius + 2, 0, Math.PI * 2);
-      ctx.fill(); ctx.stroke();
-
-      // Gran Bisento Murakumogiri
-      ctx.strokeStyle = '#78909C'; ctx.lineWidth = 3.5;
-      ctx.beginPath();
-      ctx.moveTo(-18, -26); ctx.lineTo(26, 26);
-      ctx.stroke();
-      ctx.strokeStyle = '#FFB300'; ctx.lineWidth = 4.5;
-      ctx.beginPath();
-      ctx.arc(-18, -26, 8, 0, Math.PI * 0.7);
-      ctx.stroke();
-
-      // Bandana
-      ctx.fillStyle = '#37474F';
-      ctx.beginPath();
-      ctx.arc(0, -3, 13, Math.PI, 0);
-      ctx.fill();
-
-      // Gran bigote blanco en media luna
-      ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = 4.2;
-      ctx.beginPath();
-      ctx.arc(0, -2, 16, 0.25, Math.PI - 0.25);
-      ctx.stroke();
-    } else if (STATE.charId === 'luffy_pts') {
-      // LUFFY (POST TIME SKIP): Kimono rojo, cicatriz en X, pelo negro, sombrero de paja
-      ctx.fillStyle = '#D32F2F';
-      ctx.strokeStyle = '#000'; ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(0, 0, p.radius, 0, Math.PI * 2);
-      ctx.fill(); ctx.stroke();
-
-      // Cicatriz en el pecho en X
-      ctx.fillStyle = '#FFCC80';
-      ctx.beginPath();
-      ctx.arc(0, 0, 9, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = '#8D6E63'; ctx.lineWidth = 2.4;
-      ctx.beginPath();
-      ctx.moveTo(-4, -4); ctx.lineTo(4, 4);
-      ctx.moveTo(4, -4); ctx.lineTo(-4, 4);
-      ctx.stroke();
-
-      // Puños oscurecidos con Busoshoku Haki
-      ctx.fillStyle = '#212121';
-      ctx.beginPath();
-      ctx.arc(-13, 12, 6, 0, Math.PI * 2);
-      ctx.arc(13, 12, 6, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Pelo negro y Sombrero de paja
-      ctx.fillStyle = '#1A1A1A';
-      ctx.beginPath();
-      ctx.arc(-1, 0, 13, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#FBC02D';
-      ctx.strokeStyle = '#7A5600'; ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.ellipse(-1, 0, 16, 8, 0, 0, Math.PI * 2);
-      ctx.fill(); ctx.stroke();
-      ctx.fillStyle = '#B71C1C';
-      ctx.fillRect(-9, -2.5, 16, 3);
-      ctx.fillStyle = '#FBC02D';
-      ctx.beginPath();
-      ctx.arc(-1, -1, 9, Math.PI, 0);
-      ctx.fill(); ctx.stroke();
-    }
-  }
+  charMod.drawBody(rc);
 
   ctx.restore();
 }

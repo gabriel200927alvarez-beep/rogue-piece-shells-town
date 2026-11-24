@@ -2,7 +2,8 @@
 // 3. INPUT: Rastreo Global de Dedos + Joystick Virtual + Teclado y Botones
 // ============================================================================
 
-import { CONFIG, CHARACTERS } from './config';
+import { CONFIG } from './config';
+import { CHARACTERS, getCharacterModule } from './characters/index';
 import { STATE } from './state';
 import { AUDIO } from './audio';
 
@@ -39,8 +40,15 @@ export const INPUT_TOUCH: TouchInputState = {
 };
 
 export const INPUT_KEYS = new Set<string>();
-let kkgKeyHeld = false;
-let kkgKeyStartTime = 0;
+let holdKeyIdx: number | null = null;
+let holdKeyStartTime = 0;
+let holdMouseIdx: number | null = null;
+let holdTouchId: number | null = null;
+let holdTouchIdx: number | null = null;
+let holdTouchStartTime = 0;
+let holdDashKeyCode: string | null = null;
+let holdDashMouse = false;
+let holdDashTouchId: number | null = null;
 let inputInitialized = false;
 
 export interface InputHandlers {
@@ -51,9 +59,9 @@ export interface InputHandlers {
   onSwitchScreen: (screen: string) => void;
   onAttack: () => void;
   onDash: () => void;
+  onReleaseHoldDash: () => void;
   onSkill: (idx: number) => void;
-  onReleaseKingKongGun: () => void;
-  onCancelWhitebeardQuake: () => void;
+  onReleaseHoldSkill: (idx: number) => void;
 }
 
 export function screenToCanvas(clientX: number, clientY: number): { x: number; y: number } {
@@ -103,10 +111,15 @@ export function clearAllHeldInputs(): void {
   INPUT_TOUCH.attackTouchId = null;
   INPUT_TOUCH.joystick.active = false;
   INPUT_TOUCH.joystick.magnitude = 0;
-  kkgKeyHeld = false;
+  holdKeyIdx = null;
+  holdMouseIdx = null;
+  holdTouchId = null;
+  holdTouchIdx = null;
+  holdDashKeyCode = null;
+  holdDashMouse = false;
+  holdDashTouchId = null;
   const btnAtk = document.getElementById('btn-attack');
   if (btnAtk) btnAtk.classList.remove('pressed');
-  if (STATE.player) STATE.player.kkgMouseHeld = false;
 }
 
 export function initInput(handlers: InputHandlers): void {
@@ -272,18 +285,33 @@ export function initInput(handlers: InputHandlers): void {
       flashButton('flash-attack');
       handlers.onAttack();
     } else if ((e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.code === 'KeyK') && !e.repeat) {
+      const charMod = getCharacterModule(STATE.charId);
+      if (charMod.supportsHoldDash?.() && !charMod.isHoldDashActive?.(STATE.player)) {
+        holdDashKeyCode = e.code;
+      }
       flashButton('flash-dash');
       handlers.onDash();
     } else if ((e.code === 'Digit1' || e.code === 'KeyU') && !e.repeat) {
+      const charMod = getCharacterModule(STATE.charId);
+      if (charMod.supportsHoldSkill?.(0) && !charMod.isHoldSkillActive?.(STATE.player, 0)) {
+        holdKeyIdx = 0;
+        holdKeyStartTime = performance.now();
+      }
       flashButton('flash-h1');
       handlers.onSkill(0);
     } else if ((e.code === 'Digit2' || e.code === 'KeyI') && !e.repeat) {
+      const charMod = getCharacterModule(STATE.charId);
+      if (charMod.supportsHoldSkill?.(1) && !charMod.isHoldSkillActive?.(STATE.player, 1)) {
+        holdKeyIdx = 1;
+        holdKeyStartTime = performance.now();
+      }
       flashButton('flash-h2');
       handlers.onSkill(1);
     } else if ((e.code === 'Digit3' || e.code === 'KeyO') && !e.repeat) {
-      if (STATE.charId === 'luffy_pts' && STATE.player && !STATE.player.isChargingKKG) {
-        kkgKeyHeld = true;
-        kkgKeyStartTime = performance.now();
+      const charMod = getCharacterModule(STATE.charId);
+      if (charMod.supportsHoldSkill?.(2) && !charMod.isHoldSkillActive?.(STATE.player, 2)) {
+        holdKeyIdx = 2;
+        holdKeyStartTime = performance.now();
       }
       flashButton('flash-h3');
       handlers.onSkill(2);
@@ -297,11 +325,23 @@ export function initInput(handlers: InputHandlers): void {
       const btnAtk = document.getElementById('btn-attack');
       if (btnAtk) btnAtk.classList.remove('pressed');
     }
-    if ((e.code === 'Digit3' || e.code === 'KeyO') && kkgKeyHeld) {
-      kkgKeyHeld = false;
-      if (STATE.charId === 'luffy_pts' && STATE.player && STATE.player.isChargingKKG) {
-        if (performance.now() - kkgKeyStartTime >= 150) {
-          handlers.onReleaseKingKongGun();
+    if (holdDashKeyCode && e.code === holdDashKeyCode) {
+      holdDashKeyCode = null;
+      const charMod = getCharacterModule(STATE.charId);
+      if (charMod.isHoldDashActive?.(STATE.player)) {
+        handlers.onReleaseHoldDash();
+      }
+    }
+    const keySkillIdx =
+      e.code === 'Digit1' || e.code === 'KeyU' ? 0 :
+      e.code === 'Digit2' || e.code === 'KeyI' ? 1 :
+      e.code === 'Digit3' || e.code === 'KeyO' ? 2 : -1;
+    if (keySkillIdx >= 0 && holdKeyIdx === keySkillIdx) {
+      holdKeyIdx = null;
+      const charMod = getCharacterModule(STATE.charId);
+      if (charMod.isHoldSkillActive?.(STATE.player, keySkillIdx)) {
+        if (performance.now() - holdKeyStartTime >= 150) {
+          handlers.onReleaseHoldSkill(keySkillIdx);
         }
       }
     }
@@ -333,11 +373,49 @@ export function initInput(handlers: InputHandlers): void {
     btnDash.addEventListener('touchstart', (e) => {
       e.preventDefault();
       if (STATE.screen !== 'playing') return;
+      const charMod = getCharacterModule(STATE.charId);
+      if (charMod.supportsHoldDash?.()) {
+        const t = e.changedTouches[0];
+        holdDashTouchId = t.identifier;
+      }
       flashButton('flash-dash');
       handlers.onDash();
     }, { passive: false });
+    const onDashTouchEnd = (e: TouchEvent) => {
+      if (holdDashTouchId === null) return;
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier === holdDashTouchId) {
+          holdDashTouchId = null;
+          const charMod = getCharacterModule(STATE.charId);
+          if (charMod.isHoldDashActive?.(STATE.player)) {
+            e.preventDefault();
+            handlers.onReleaseHoldDash();
+          }
+          break;
+        }
+      }
+    };
+    btnDash.addEventListener('touchend', onDashTouchEnd, { passive: false });
+    btnDash.addEventListener('touchcancel', onDashTouchEnd, { passive: false });
+    btnDash.addEventListener('mousedown', () => {
+      if (STATE.screen !== 'playing') return;
+      const charMod = getCharacterModule(STATE.charId);
+      if (!charMod.supportsHoldDash?.()) return;
+      holdDashMouse = true;
+      flashButton('flash-dash');
+      handlers.onDash();
+    });
+    btnDash.addEventListener('mouseup', () => {
+      if (!holdDashMouse) return;
+      holdDashMouse = false;
+      const charMod = getCharacterModule(STATE.charId);
+      if (charMod.isHoldDashActive?.(STATE.player)) {
+        handlers.onReleaseHoldDash();
+      }
+    });
     btnDash.addEventListener('click', () => {
       if (STATE.screen !== 'playing') return;
+      if (getCharacterModule(STATE.charId).supportsHoldDash?.()) return;
       flashButton('flash-dash');
       handlers.onDash();
     });
@@ -350,81 +428,56 @@ export function initInput(handlers: InputHandlers): void {
     btnH.addEventListener('touchstart', (e) => {
       e.preventDefault();
       if (STATE.screen !== 'playing') return;
-      if (idx === 2 && STATE.charId === 'luffy_pts' && STATE.player) {
+      const charMod = getCharacterModule(STATE.charId);
+      if (charMod.supportsHoldSkill?.(idx)) {
         const t = e.changedTouches[0];
-        STATE.player.kkgTouchId = t.identifier;
-        STATE.player.kkgTouchStartTime = performance.now();
+        holdTouchId = t.identifier;
+        holdTouchIdx = idx;
+        holdTouchStartTime = performance.now();
       }
       flashButton(`flash-h${idx + 1}`);
       handlers.onSkill(idx);
     }, { passive: false });
 
-    if (idx !== 2) {
-      btnH.addEventListener('click', () => {
-        if (STATE.screen !== 'playing') return;
-        flashButton(`flash-h${idx + 1}`);
-        handlers.onSkill(idx);
-      });
-    } else {
-      btnH.addEventListener('touchend', (e) => {
-        if (STATE.charId === 'luffy_pts' && STATE.player && STATE.player.isChargingKKG) {
-          for (let i = 0; i < e.changedTouches.length; i++) {
-            if (e.changedTouches[i].identifier === STATE.player.kkgTouchId) {
-              const holdDuration = performance.now() - (STATE.player.kkgTouchStartTime || 0);
-              STATE.player.kkgTouchId = null;
-              if (holdDuration >= 150) {
-                e.preventDefault();
-                handlers.onReleaseKingKongGun();
-              }
-              break;
-            }
+    const onSkillTouchEnd = (e: TouchEvent) => {
+      if (holdTouchId === null || holdTouchIdx !== idx) return;
+      const charMod = getCharacterModule(STATE.charId);
+      if (!charMod.isHoldSkillActive?.(STATE.player, idx)) return;
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier === holdTouchId) {
+          const holdDuration = performance.now() - holdTouchStartTime;
+          holdTouchId = null;
+          holdTouchIdx = null;
+          if (holdDuration >= 150) {
+            e.preventDefault();
+            handlers.onReleaseHoldSkill(idx);
           }
+          break;
         }
-      }, { passive: false });
-      btnH.addEventListener('touchcancel', (e) => {
-        if (STATE.charId === 'luffy_pts' && STATE.player && STATE.player.isChargingKKG) {
-          for (let i = 0; i < e.changedTouches.length; i++) {
-            if (e.changedTouches[i].identifier === STATE.player.kkgTouchId) {
-              const holdDuration = performance.now() - (STATE.player.kkgTouchStartTime || 0);
-              STATE.player.kkgTouchId = null;
-              if (holdDuration >= 150) {
-                e.preventDefault();
-                handlers.onReleaseKingKongGun();
-              }
-              break;
-            }
-          }
-        }
-      }, { passive: false });
-      btnH.addEventListener('mousedown', () => {
-        if (STATE.screen !== 'playing') return;
-        if (STATE.charId === 'luffy_pts' && STATE.player) {
-          STATE.player.kkgMouseHeld = true;
-        }
-        flashButton(`flash-h${idx + 1}`);
-        handlers.onSkill(idx);
-      });
-      btnH.addEventListener('mouseup', () => {
-        if (STATE.charId === 'luffy_pts' && STATE.player && STATE.player.isChargingKKG && STATE.player.kkgMouseHeld) {
-          STATE.player.kkgMouseHeld = false;
-          handlers.onReleaseKingKongGun();
-        }
-      });
-    }
-  });
-
-  // Vinculación robusta del botón CANCEL para Island Shaking de Barbablanca
-  const btnCancelQuake = document.getElementById('btn-cancel-quake');
-  if (btnCancelQuake) {
-    const handleCancelQuake = (e: Event) => {
-      e.preventDefault();
-      e.stopPropagation();
-      handlers.onCancelWhitebeardQuake();
+      }
     };
-    btnCancelQuake.addEventListener('touchstart', handleCancelQuake, { passive: false });
-    btnCancelQuake.addEventListener('pointerdown', handleCancelQuake);
-    btnCancelQuake.addEventListener('click', handleCancelQuake);
-  }
+    btnH.addEventListener('touchend', onSkillTouchEnd, { passive: false });
+    btnH.addEventListener('touchcancel', onSkillTouchEnd, { passive: false });
+
+    btnH.addEventListener('mousedown', () => {
+      if (STATE.screen !== 'playing') return;
+      const charMod = getCharacterModule(STATE.charId);
+      if (charMod.supportsHoldSkill?.(idx)) {
+        holdMouseIdx = idx;
+      }
+      flashButton(`flash-h${idx + 1}`);
+      handlers.onSkill(idx);
+    });
+
+    btnH.addEventListener('mouseup', () => {
+      if (holdMouseIdx !== idx) return;
+      holdMouseIdx = null;
+      const charMod = getCharacterModule(STATE.charId);
+      if (charMod.isHoldSkillActive?.(STATE.player, idx)) {
+        handlers.onReleaseHoldSkill(idx);
+      }
+    });
+  });
 
   window.addEventListener('mouseup', () => {
     if (INPUT_TOUCH.attackHeld && INPUT_TOUCH.attackTouchId === null) {
@@ -432,23 +485,49 @@ export function initInput(handlers: InputHandlers): void {
       const btnAtk = document.getElementById('btn-attack');
       if (btnAtk) btnAtk.classList.remove('pressed');
     }
-    if (STATE.charId === 'luffy_pts' && STATE.player && STATE.player.isChargingKKG && STATE.player.kkgMouseHeld) {
-      STATE.player.kkgMouseHeld = false;
-      handlers.onReleaseKingKongGun();
+    if (holdDashMouse) {
+      holdDashMouse = false;
+      const charMod = getCharacterModule(STATE.charId);
+      if (charMod.isHoldDashActive?.(STATE.player)) {
+        handlers.onReleaseHoldDash();
+      }
+    }
+    if (holdMouseIdx !== null) {
+      const idx = holdMouseIdx;
+      holdMouseIdx = null;
+      const charMod = getCharacterModule(STATE.charId);
+      if (charMod.isHoldSkillActive?.(STATE.player, idx)) {
+        handlers.onReleaseHoldSkill(idx);
+      }
     }
   });
 
   window.addEventListener('touchend', (e) => {
-    if (STATE.charId === 'luffy_pts' && STATE.player && STATE.player.isChargingKKG && STATE.player.kkgTouchId != null) {
+    if (holdDashTouchId !== null) {
       for (let i = 0; i < e.changedTouches.length; i++) {
-        if (e.changedTouches[i].identifier === STATE.player.kkgTouchId) {
-          const holdDuration = performance.now() - (STATE.player.kkgTouchStartTime || 0);
-          STATE.player.kkgTouchId = null;
-          if (holdDuration >= 150) {
-            handlers.onReleaseKingKongGun();
+        if (e.changedTouches[i].identifier === holdDashTouchId) {
+          holdDashTouchId = null;
+          const charMod = getCharacterModule(STATE.charId);
+          if (charMod.isHoldDashActive?.(STATE.player)) {
+            handlers.onReleaseHoldDash();
           }
           break;
         }
+      }
+    }
+    if (holdTouchId === null || holdTouchIdx === null) return;
+    const charMod = getCharacterModule(STATE.charId);
+    if (!charMod.isHoldSkillActive?.(STATE.player, holdTouchIdx)) return;
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      if (e.changedTouches[i].identifier === holdTouchId) {
+        const holdDuration = performance.now() - holdTouchStartTime;
+        const idx = holdTouchIdx;
+        holdTouchId = null;
+        holdTouchIdx = null;
+        if (holdDuration >= 150) {
+          handlers.onReleaseHoldSkill(idx);
+        }
+        break;
       }
     }
   });

@@ -1,52 +1,11 @@
-# Dependencies
 node_modules/
-dist/
 build/
-
-# Hefesto
-.DS_Store
-Thumbs.db
-*.log
-*.tmp
-.agent/
-.papelera/
-.godot/
-.import/
-export_presets.cfg.bak
-juego.apk
-juego-web.zip
-juego-*.x86_64
-juego-*.exe
-juego-*.pck
-web/
-
-# Environment
-.env
-.env.*
-!.env.example
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-npm-debug.log*
-
-# Test coverage
+dist/
 coverage/
-
-# Zip/backup
-*.zip
-*.tar.gz
-*.bak
-*.orig
-
-# Hefesto artifacts
-rogue-piece-shells-town-*.zip
+.DS_Store
+*.log
+.env*
+!.env.example
+.playwright-cli/
+.aistudio/
+public/assets/aistudio/
